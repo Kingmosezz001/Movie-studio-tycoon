@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,7 +124,7 @@
     .movie {
       background: #333;
       margin: 10px 0;
-      padding: 45px;
+      padding: 15px;
       border-radius: 8px;
       text-align: left;
       display: flex;
@@ -229,7 +232,7 @@
   color: #FFD700;
   max-height: 70vh; /* Slightly reduced for smaller modal */
   overflow-y: auto;
-  font-size: 10px;
+  font-size: 14px;
 }
     #movieList {
       display: flex;
@@ -238,7 +241,7 @@
     }
     .movie p {
       margin: 3px 0;
-      font-size: 12px;
+      font-size: 10px;
     }
     .movie ul {
       margin: 3px 0 8px;
@@ -556,6 +559,11 @@
     <option value="short">Short Film</option>
     <option value="mini-series">Mini-Series</option>
   </select>
+  <select id="movieStyle" onchange="updateMovieStyle()">
+  <option value="modern">Modern</option>
+  <option value="traditional">Traditional</option>
+  <option value="future">Future</option>
+</select>
   <div class="episode-input" id="episodeInput" style="display: none;">
     <input type="number" id="episodeCount" placeholder="Number of Episodes (1-10)" min="1" max="10" value="1">
   </div>
@@ -1060,6 +1068,12 @@
       document.getElementById("movieCreation").style.display = "none";
       document.getElementById("game").style.display = "block";
     }
+    
+    function updateMovieStyle() {
+  // Placeholder function to handle style changes (e.g., update UI if needed)
+  const style = document.getElementById("movieStyle").value;
+  // You can add logic here if you want to update the UI dynamically
+}
 
     function createMovie() {
   const sequelOrSeasonIndex = document.getElementById("sequelOrSeasonSelect").value;
@@ -1241,6 +1255,16 @@
     productionStartWeek: player.week,
     productionWeeksRequired: productionWeeksRequired
   };
+  
+  // Store movie style in movie object
+movie.style = document.getElementById("movieStyle").value;
+
+// Apply style multiplier
+let styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0; // Traditional boosts fans, Future boosts revenue
+movie.fansPerSec = Math.floor(movie.fansPerSec * styleMultiplier);
+movie.revenuePerSec = Math.floor(movie.revenuePerSec * (movie.style === "future" ? 1.5 : 1.0));
+movie.weeklyFans = Math.floor((movie.weeklyFans || movie.fansPerSec) * styleMultiplier);
+movie.weeklyRevenue = Math.floor((movie.weeklyRevenue || movie.revenuePerSec) * (movie.style === "future" ? 1.5 : 1.0));
 
   // Add movie to player's movies
   player.movies.push(movie);
@@ -1263,18 +1287,18 @@
     function renderMoviesInPanel(container) {
   container.innerHTML = "";
   const platforms = [
-    { name: "IndieFlicks", fameRequired: 0, cost: 100, weeklyRevenue: 10, weeklyFans: 50, fameBoost: 10, description: "A niche platform for independent films." },
-    { name: "Hula", fameRequired: 500, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
-    { name: "PrimeView", fameRequired: 1000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
-    { name: "DisStream", fameRequired: 2000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
-    { name: "AppleStream", fameRequired: 3000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
-    { name: "StreamFlix", fameRequired: 5000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
-    { name: "VibeStream", fameRequired: 700, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
-    { name: "GlobeFlix", fameRequired: 1500, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
-    { name: "StarCast", fameRequired: 2500, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
-    { name: "EpicView", fameRequired: 4000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
-    { name: "NexGenTV", fameRequired: 6000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." },
-  ];
+  { name: "IndieFlicks", fameRequired: 0, cost: 100, weeklyRevenue: 10, weeklyFans: 50, fameBoost: 10, description: "A niche platform for independent films." },
+  { name: "Hula", fameRequired: 1000, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
+  { name: "PrimeView", fameRequired: 2000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
+  { name: "DisStream", fameRequired: 4000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
+  { name: "AppleStream", fameRequired: 6000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
+  { name: "StreamFlix", fameRequired: 10000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
+  { name: "VibeStream", fameRequired: 1400, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
+  { name: "GlobeFlix", fameRequired: 3000, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
+  { name: "StarCast", fameRequired: 5000, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
+  { name: "EpicView", fameRequired: 8000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
+  { name: "NexGenTV", fameRequired: 12000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." },
+];
 
   player.movies.forEach((m, index) => {
     let div = document.createElement("div");
@@ -1573,12 +1597,12 @@ function closeStreamingMovies() {
 }
 
 function renderStreamingMovies(container) {
-  container.innerHTML = ""; // Clear the container
+  container.innerHTML = "";
   player.streamingMovies.forEach((m, index) => {
     let div = document.createElement("div");
     div.className = "streaming-movie";
     div.innerHTML = `
-      <h3 class="movie-title">🎬 ${m.title}</h3>
+      <h3 style="margin: 0 0 8px; color: #FFD700; font-size: 16px;">🎬 ${m.title}</h3>
       <p><strong>Platform:</strong> ${m.platform}</p>
       <p><strong>Type:</strong> ${m.type}</p>
       <p><strong>Genres:</strong> ${m.genres.join(", ")}</p>
@@ -1589,26 +1613,14 @@ function renderStreamingMovies(container) {
       <p><strong>Weekly Revenue:</strong> +$${formatNumber("money", m.weeklyRevenue)}</p>
       <p><strong>Weeks Since Release:</strong> ${m.weeksSinceRelease}</p>
       <p><strong>Status:</strong> ${m.released ? "Released" : "Pending Episode Release"}</p>
-      <p><strong>Awards:</strong> ${
-        player.awards.filter(a => a.title === m.title).map(a => a.name).join(", ") || "None"
-      }</p>
+      <p><strong>Awards:</strong> ${player.awards.filter(a => a.title === m.title).map(a => a.name).join(", ") || "None"}</p>
       ${
-        (m.type === "season" || m.type === "mini-series") &&
-        m.currentEpisode < m.episodeCount &&
-        m.weeksSinceLastEpisode >= 2
-          ? `<button class="release-episode" data-index="${index}">Release Episode ${m.currentEpisode + 1}</button>`
+        (m.type === "season" || m.type === "mini-series") && m.currentEpisode < m.episodeCount && m.weeksSinceLastEpisode >= 2
+          ? `<button onclick="releaseNextEpisode(${index})">Release Episode ${m.currentEpisode + 1}</button>`
           : ""
       }
     `;
     container.appendChild(div);
-  });
-
-  // Add event delegation for buttons
-  container.addEventListener("click", (e) => {
-    if (e.target.classList.contains("release-episode")) {
-      const index = parseInt(e.target.dataset.index);
-      releaseNextEpisode(index);
-    }
   });
 }
 
@@ -1771,6 +1783,11 @@ function renderStreamingMovies(container) {
     }
     const totalMultiplier = budgetMultiplier * episodeMultiplier * talentMultiplier * adjustedMultiplier;
 
+// Apply style multiplier
+const styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0;
+video.weeklyFans = Math.floor(video.weeklyFans * styleMultiplier);
+video.weeklyRevenue = Math.floor(video.weeklyRevenue * (movie.style === "future" ? 1.5 : 1.0));
+
     player.subscribers += newSubscribers;
     player.totalViews += initialViews;
     player.youtubeEarnings += earnings;
@@ -1794,8 +1811,8 @@ function renderStreamingMovies(container) {
       weeklyFans: Math.floor(movie.fansPerSec * totalMultiplier),
       weeklyRevenue: Math.floor(movie.revenuePerSec * totalMultiplier)
     });
-
-    generateReviews(video, "YouTube", true);
+    
+generateReviews(video, "YouTube", true);
     checkSubscriberMilestones();
     renderYouTubeVideos();
     document.getElementById("money").innerText = formatNumber("money", player.money);
@@ -1851,10 +1868,15 @@ function releaseNextYouTubeEpisode(videoIndex) {
   const durationMultiplier = movie.duration / (movie.type === "short" ? 30 : movie.type === "feature" ? 90 : 45);
   const adjustedMultiplier = durationMultiplier > 2 ? 2 + (durationMultiplier - 2) * 0.5 : durationMultiplier;
 
+// Apply style multiplier
+const styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0;
+video.weeklyFans = Math.floor(video.weeklyFans * styleMultiplier);
+video.weeklyRevenue = Math.floor(video.weeklyRevenue * (movie.style === "future" ? 1.5 : 1.0));
+
   video.currentEpisode += 1;
   video.weeksSinceLastEpisode = 0;
-
-generateReviews(video, "YouTube", true);
+  
+  generateReviews(video, "YouTube", true);
   const initialViews = Math.floor(video.weeklyFans * 150 * adjustedMultiplier + player.fame * 15 + Math.random() * 1000);
   const initialLikes = Math.floor(initialViews * 0.03);
   const initialComments = Math.floor(initialViews * 0.01);
@@ -2076,16 +2098,16 @@ function launchStreamingPlatform() {
     function renderStreamingPlatforms() {
       const platforms = [
   { name: "IndieFlicks", fameRequired: 0, cost: 100, weeklyRevenue: 10, weeklyFans: 50, fameBoost: 10, description: "A niche platform for independent films." },
-  { name: "Hula", fameRequired: 1000, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
-  { name: "PrimeView", fameRequired: 2000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
-  { name: "DisStream", fameRequired: 4000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
-  { name: "AppleStream", fameRequired: 6000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
-  { name: "StreamFlix", fameRequired: 10000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
-  { name: "VibeStream", fameRequired: 1400, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
-  { name: "GlobeFlix", fameRequired: 3000, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
-  { name: "StarCast", fameRequired: 5000, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
-  { name: "EpicView", fameRequired: 8000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
-  { name: "NexGenTV", fameRequired: 12000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." },
+  { name: "Hula", fameRequired: 500, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
+  { name: "PrimeView", fameRequired: 1000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
+  { name: "DisStream", fameRequired: 2000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
+  { name: "AppleStream", fameRequired: 3000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
+  { name: "StreamFlix", fameRequired: 5000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
+  { name: "VibeStream", fameRequired: 700, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
+  { name: "GlobeFlix", fameRequired: 1500, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
+  { name: "StarCast", fameRequired: 2500, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
+  { name: "EpicView", fameRequired: 4000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
+  { name: "NexGenTV", fameRequired: 6000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." }
 ];
 
       const platformSelect = document.getElementById("platformSelect");
@@ -2169,6 +2191,11 @@ function launchStreamingPlatform() {
   const adjustedMultiplier = durationMultiplier > 2 ? 2 + (durationMultiplier - 2) * 0.5 : durationMultiplier;
   const totalMultiplier = budgetMultiplier * episodeMultiplier * talentMultiplier * adjustedMultiplier;
 
+// Apply style multiplier
+const styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0;
+movie.weeklyFans = Math.floor(movie.weeklyFans * styleMultiplier);
+movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * (movie.style === "future" ? 1.5 : 1.0));
+
   // Adjusted earnings for realism and better rewards
   const baseRevenue = platform.weeklyRevenue * 100;
   const revenueBoost = movie.budget * 0.5 + highCostTalents.length * 1000;
@@ -2190,8 +2217,8 @@ function launchStreamingPlatform() {
 
   player.streamingMovies.push(movie);
   player.movies.splice(parseInt(movieIndex), 1);
-  
   generateReviews(movie, platform.name);
+
   document.getElementById("money").innerText = formatNumber("money", player.money);
   document.getElementById("fame").innerText = formatNumber("fame", player.fame);
   document.getElementById("fans").innerText = formatNumber("fans", player.fans);
@@ -2218,8 +2245,8 @@ function launchStreamingPlatform() {
 
   movie.currentEpisode += 1;
   movie.weeksSinceLastEpisode = 0;
+  generateReviews(movie, movie.platform);
 
-generateReviews(movie, movie.platform);
   const budgetMultiplier = movie.budget === 1000 ? 1 : movie.budget === 2500 ? 1.5 : movie.budget === 5000 ? 2 : movie.budget === 7500 ? 2.5 : 3;
   let talentMultiplier = 1;
   const highCostTalents = movie.talents.filter(t => t.price >= 20000);
@@ -2236,20 +2263,25 @@ generateReviews(movie, movie.platform);
   const durationMultiplier = movie.duration / (movie.type === "short" ? 30 : movie.type === "feature" ? 90 : 45);
   const adjustedMultiplier = durationMultiplier > 2 ? 2 + (durationMultiplier - 2) * 0.5 : durationMultiplier;
   const totalMultiplier = budgetMultiplier * talentMultiplier * adjustedMultiplier;
+  
+  // Apply style multiplier
+const styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0;
+movie.weeklyFans = Math.floor(movie.weeklyFans * styleMultiplier);
+movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * (movie.style === "future" ? 1.5 : 1.0));
 
   const platforms = [
-  { name: "IndieFlicks", fameRequired: 0, cost: 100, weeklyRevenue: 10, weeklyFans: 50, fameBoost: 10, description: "A niche platform for independent films." },
-  { name: "Hula", fameRequired: 1000, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
-  { name: "PrimeView", fameRequired: 2000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
-  { name: "DisStream", fameRequired: 4000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
-  { name: "AppleStream", fameRequired: 6000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
-  { name: "StreamFlix", fameRequired: 10000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
-  { name: "VibeStream", fameRequired: 1400, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
-  { name: "GlobeFlix", fameRequired: 3000, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
-  { name: "StarCast", fameRequired: 5000, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
-  { name: "EpicView", fameRequired: 8000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
-  { name: "NexGenTV", fameRequired: 12000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." },
-];
+    { name: "IndieFlicks", fameRequired: 0, cost: 100, weeklyRevenue: 10, weeklyFans: 50, fameBoost: 10, description: "A niche platform for independent films." },
+    { name: "Hula", fameRequired: 500, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
+    { name: "PrimeView", fameRequired: 1000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
+    { name: "DisStream", fameRequired: 2000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
+    { name: "AppleStream", fameRequired: 3000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
+    { name: "StreamFlix", fameRequired: 5000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
+    { name: "VibeStream", fameRequired: 700, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
+    { name: "GlobeFlix", fameRequired: 1500, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
+    { name: "StarCast", fameRequired: 2500, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
+    { name: "EpicView", fameRequired: 4000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
+    { name: "NexGenTV", fameRequired: 6000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." },
+  ];
   const platform = platforms.find((p) => p.name === movie.platform);
   movie.weeklyFans = Math.floor(platform.weeklyFans * totalMultiplier);
   movie.weeklyRevenue = Math.floor(platform.weeklyRevenue * totalMultiplier);
@@ -2478,36 +2510,57 @@ generateReviews(movie, movie.platform);
     });
 
     player.streamingMovies.forEach((movie) => {
-        if (movie.released) {
-            player.fans += movie.weeklyFans || 0;
-            player.money += movie.weeklyRevenue || 0;
-            movie.weeksSinceLastEpisode = (movie.weeksSinceLastEpisode || 0) + 1;
-            if (movie.weeksSinceRelease < 10) {
-                movie.weeksSinceRelease += 1;
-                const decayRate = 0.9;
-                const decayFactor = Math.pow(decayRate, movie.weeksSinceRelease);
-                movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * decayFactor);
-                movie.weeklyFans = Math.floor(movie.weeklyFans * decayFactor);
-            }
-        }
-    });
+  if (movie.released) {
+    // For series, only apply earnings if an episode has been recently released
+    if (movie.type === "season" || movie.type === "mini-series") {
+      if (movie.currentEpisode <= movie.episodeCount && movie.weeksSinceLastEpisode <= 2) {
+        player.fans += movie.weeklyFans || 0;
+        player.money += movie.weeklyRevenue || 0;
+      }
+    } else {
+      // Non-series movies apply earnings as usual
+      player.fans += movie.weeklyFans || 0;
+      player.money += movie.weeklyRevenue || 0;
+    }
+    movie.weeksSinceLastEpisode = (movie.weeksSinceLastEpisode || 0) + 1;
+    movie.weeksSinceRelease += 1; // Increment continuously
+    if (movie.weeksSinceRelease <= 10) {
+      // Apply decay only for first 10 weeks
+      const decayRate = 0.9;
+      const decayFactor = Math.pow(decayRate, movie.weeksSinceRelease);
+      movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * decayFactor);
+      movie.weeklyFans = Math.floor(movie.weeklyFans * decayFactor);
+    }
+  }
+});
 
     player.youtubeVideos.forEach((video) => {
-        if (video.isSeries) {
-            video.weeksSinceLastEpisode = (video.weeksSinceLastEpisode || 0) + 1;
-            if (video.weeksSinceRelease < 10) {
-                video.weeksSinceRelease += 1;
-                const decayRate = 0.9;
-                const decayFactor = Math.pow(decayRate, video.weeksSinceRelease);
-                video.weeklyRevenue = Math.floor(video.weeklyRevenue * decayFactor);
-                video.weeklyFans = Math.floor(video.weeklyFans * decayFactor);
-            }
-            if (video.currentEpisode <= video.totalEpisodes) {
-                player.fans += video.weeklyFans || 0;
-                player.money += video.weeklyRevenue || 0;
-            }
+    if (video.isSeries) {
+        video.weeksSinceLastEpisode = (video.weeksSinceLastEpisode || 0) + 1;
+        if (video.weeksSinceRelease < 10) {
+            video.weeksSinceRelease += 1;
+            const decayRate = 0.9;
+            const decayFactor = Math.pow(decayRate, video.weeksSinceRelease);
+            video.weeklyRevenue = Math.floor(video.weeklyRevenue * decayFactor);
+            video.weeklyFans = Math.floor(video.weeklyFans * decayFactor);
         }
-    });
+        if (video.currentEpisode <= video.totalEpisodes && video.weeksSinceLastEpisode <= 2) {
+            player.fans += video.weeklyFans || 0;
+            player.money += video.weeklyRevenue || 0;
+        }
+    } else {
+        // Non-series videos apply earnings as usual
+        if (video.weeksSinceRelease < 10) {
+            video.weeksSinceRelease += 1;
+            const decayRate = 0.9;
+            const decayFactor = Math.pow(decayRate, video.weeksSinceRelease);
+            video.weeklyRevenue = Math.floor(video.weeklyRevenue * decayFactor);
+            video.weeklyFans = Math.floor(video.weeklyFans * decayFactor);
+        }
+        player.fans += video.weeklyFans || 0;
+        player.money += video.weeklyRevenue || 0;
+    }
+});
 
     // Update YouTube video metrics
     let weeklyViews = 0;
@@ -2695,57 +2748,244 @@ function calculateReviewScore(movie) {
 
 function generateComments(movie, score, isYouTube) {
   const comments = [];
-  const commentTemplates = {
-    positive: [
-      "Absolutely loved {title}! The {genre} vibes were spot on. Can't wait for {next}!",
-      "{title} is a masterpiece! {actor} was phenomenal. More please!",
-      "This {type} blew me away! {style} storytelling at its finest.",
-      "Incredible work on {title}! The {genre} elements were so engaging."
-    ],
-    negative: [
-      "{title} fell flat. The {genre} felt forced and lacked depth.",
-      "Disappointed with {title}. Expected more from {actor}.",
-      "This {type} didn't hit the mark. {style} approach felt off.",
-      "{title} was a letdown. The pacing in {genre} was all wrong."
-    ],
-    sequelRequests: [
-      "Please make {title} Part {nextPart}!",
-      "We need a Season {nextSeason} of {title} ASAP!",
-      "{title} deserves a sequel! Let's see more {genre} action."
-    ]
-  };
+  const mainActor = movie.talents.find(t => t.name.includes("Adekola") || t.name.includes("Adebayo") || t.name.includes("Hanks"))?.name || movie.talents[0]?.name || "the cast";
   const isSeries = movie.type === "season" || movie.type === "mini-series";
   const nextPart = [...player.movies, ...player.streamingMovies, ...player.youtubeVideos]
     .filter(m => m.title.includes(movie.title.split(" Part")[0]) && !m.isSeries).length + 2;
-  const nextSeason = [...player.movies, ...player.streamingMovies, ...player.youtubeVideos]
-    .filter(m => m.title.includes(movie.title.split(": Season")[0]) && m.isSeries).length + 2;
-  const mainActor = movie.talents.find(t => t.name.includes("Adekola") || t.name.includes("Adebayo") || t.name.includes("Hanks"))?.name || movie.talents[0]?.name || "the cast";
-  const replacements = {
-    title: movie.title,
-    genre: movie.genres[0],
-    actor: mainActor,
-    type: movie.type,
-    style: movie.style || "modern",
-    next: isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`,
-    nextPart: nextPart,
-    nextSeason: nextSeason
+  const nextSeason = [...player.streamingMovies, ...player.youtubeVideos]
+    .filter(m => m.title.includes(movie.title.split(": Season")[0]) && (m.type === "season" || m.type === "mini-series")).length + 2;
+  const highBudget = movie.budget >= 5000;
+  const highTalent = movie.talents.some(t => t.price >= 20000);
+  const style = movie.style || "modern";
+  const genre = movie.genres[0].toLowerCase();
+
+  // Base comment count on platform and movie quality
+  const commentCount = isYouTube ? Math.floor(Math.random() * 8 + 10) : Math.floor(Math.random() * 5 + 6);
+
+  // Realistic comment templates with specific, grounded reactions
+  const commentTemplates = {
+    positive: {
+      action: [
+        `Yo, ${movie.title} had me hyped! ${mainActor} killing it with those insane stunts, and the ${style} explosions? Next-level!`,
+        `Just watched ${movie.title} and wow, the action’s relentless. That final chase scene? My heart’s still racing!`,
+        `${movie.title} is pure adrenaline. ${mainActor}’s fight scenes are 🔥, tho the plot’s a bit predictable.`,
+        `Can we talk about how ${movie.title} nails the ${style} vibe? ${mainActor} carries it, but those CGI effects stole the show!`
+      ],
+      romance: [
+        `${movie.title} got me in my feels 🥰. ${mainActor} and the lead have crazy chemistry, but that ending? I need tissues!`,
+        `Obsessed with ${movie.title}! The ${style} love story hits different, though ${mainActor}’s monologue was a tad long.`,
+        `${movie.title} is peak romance. That ${style} setting? Gorgeous. ${mainActor} made me believe in love again.`,
+        `Watched ${movie.title} last night, and ${mainActor}’s charm is unreal. The breakup scene wrecked me!`
+      ],
+      comedy: [
+        `${movie.title} had me dying 😂 ${mainActor}’s one-liners are gold, but some jokes didn’t land.`,
+        `Okay, ${movie.title} is hilarious! That ${style} humor with ${mainActor}? I’m quoting it all week!`,
+        `${movie.title}’s a riot, but ${mainActor} carries it. The side characters were kinda meh.`,
+        `Laughed so hard at ${movie.title}! ${style} comedy done right, though the second act dragged a bit.`
+      ],
+      drama: [
+        `${movie.title} hit me hard. ${mainActor}’s performance is Oscar-worthy, but the pacing’s slow in parts.`,
+        `Cried my eyes out watching ${movie.title}. The ${style} storytelling is so raw, ${mainActor} crushed it!`,
+        `${movie.title} is heavy but worth it. ${mainActor}’s scenes are intense, tho the ending felt rushed.`,
+        `${movie.title}’s ${style} drama is gripping. ${mainActor} owns every scene, but the script needed more polish.`
+      ],
+      horror: [
+        `${movie.title} scared the heck outta me! ${mainActor}’s screams felt too real, but the jump scares got old.`,
+        `${movie.title}’s ${style} creepy vibe is unreal. ${mainActor} sells the fear, but the ending was meh.`,
+        `Couldn’t sleep after ${movie.title}! Those ${style} visuals are haunting, ${mainActor} was solid.`,
+        `${movie.title} gave me chills! ${mainActor}’s acting is top-tier, but the plot’s a bit thin.`
+      ],
+      thriller: [
+        `${movie.title} kept me guessing! ${mainActor}’s intensity is wild, but some twists were too obvious.`,
+        `Edge of my seat for ${movie.title}! ${style} suspense is killer, ${mainActor} nails the vibe.`,
+        `${movie.title}’s plot twists? Insane. ${mainActor} is a beast, but the climax felt a bit off.`,
+        `Binged ${movie.title} and wow, ${mainActor} carries the ${style} tension. Wish the ending hit harder.`
+      ],
+      animation: [
+        `${movie.title}’s visuals are stunning! The ${style} art pops, and ${mainActor}’s voice acting is perfect.`,
+        `Kids and I loved ${movie.title}! ${style} animation is gorgeous, but ${mainActor} steals the show.`,
+        `${movie.title} is a visual feast! ${style} colors are wild, tho the story’s a bit simple.`,
+        `${movie.title}’s ${style} world is magical. ${mainActor}’s voice fits perfectly, but pacing’s uneven.`
+      ],
+      documentary: [
+        `${movie.title} opened my eyes! The ${style} storytelling is gripping, ${mainActor}’s narration is spot-on.`,
+        `${movie.title} is a must-watch. ${style} facts hit hard, but ${mainActor}’s voice drags at times.`,
+        `Learned so much from ${movie.title}! ${style} approach is fresh, ${mainActor} keeps it engaging.`,
+        `${movie.title}’s ${style} truth bombs are wild. ${mainActor}’s delivery is solid, but it’s a bit long.`
+      ],
+      "sci-fi": [
+        `${movie.title} blew my mind! ${mainActor} in that ${style} universe? I’m ready for a sequel!`,
+        `${movie.title}’s ${style} sci-fi is epic. ${mainActor} kills it, but the tech jargon got heavy.`,
+        `Obsessed with ${movie.title}’s world! ${mainActor} shines, but the ${style} plot’s a bit messy.`,
+        `${movie.title} takes you to another galaxy. ${mainActor}’s role is dope, but pacing’s off.`
+      ],
+      fantasy: [
+        `${movie.title}’s ${style} magic is unreal! ${mainActor} slays, but the world-building needs more.`,
+        `${movie.title} feels like a dream! ${mainActor}’s epic, but the ${style} lore’s a bit much.`,
+        `Loved ${movie.title}’s ${style} vibe! ${mainActor}’s quest is fire, but the ending’s rushed.`,
+        `${movie.title} is pure fantasy gold. ${mainActor} shines, but some CGI was iffy.`
+      ],
+      adventure: [
+        `${movie.title}’s ${style} journey is wild! ${mainActor}’s energy is unreal, but the plot’s thin.`,
+        `Couldn’t look away from ${movie.title}! ${mainActor} nails the ${style} adventure, but pacing’s slow.`,
+        `${movie.title} takes you places! ${mainActor}’s epic, but the ${style} stakes felt low.`,
+        `${movie.title}’s ${style} quest is dope. ${mainActor} kills it, but the climax was meh.`
+      ],
+      musical: [
+        `${movie.title}’s songs are stuck in my head! ${mainActor}’s voice is fire, but the ${style} story’s weak.`,
+        `${movie.title} is a musical vibe! ${mainActor} slays, but some ${style} numbers drag.`,
+        `Singing along to ${movie.title}! ${mainActor}’s pipes are unreal, but the ${style} plot’s thin.`,
+        `${movie.title}’s ${style} tunes are catchy. ${mainActor} shines, but the pacing’s off.`
+      ],
+      western: [
+        `${movie.title}’s ${style} grit is real! ${mainActor}’s showdowns are fire, but the story’s slow.`,
+        `${movie.title} feels like a classic! ${mainActor}’s drawl is perfect, but the ${style} pacing drags.`,
+        `Loved ${movie.title}’s ${style} vibe! ${mainActor} kills it, but the plot’s predictable.`,
+        `${movie.title}’s ${style} duels are epic. ${mainActor} shines, but the ending’s weak.`
+      ],
+      historical: [
+        `${movie.title} brings history to life! ${mainActor}’s role is unreal, but the ${style} pacing’s slow.`,
+        `${movie.title}’s ${style} era feels so real. ${mainActor} kills it, but the script’s dry.`,
+        `Learned a ton from ${movie.title}! ${mainActor}’s epic, but the ${style} details overwhelm.`,
+        `${movie.title}’s ${style} past is gripping. ${mainActor} shines, but the runtime’s long.`
+      ]
+    },
+    negative: {
+      action: [
+        `${movie.title} tried too hard. ${mainActor}’s stunts feel forced, and the ${style} effects look cheap.`,
+        `${movie.title}’s action is meh. ${mainActor}’s okay, but the ${style} plot’s a mess.`,
+        `Wanted to love ${movie.title}, but ${mainActor} can’t save the weak ${style} script.`,
+        `${movie.title}’s fights are dull. ${mainActor} tries, but the ${style} vibe’s flat.`
+      ],
+      romance: [
+        `${movie.title}’s love story flops. ${mainActor} has no chemistry, and the ${style} vibe’s off.`,
+        `${movie.title} feels so fake. ${mainActor}’s romance is bland, ${style} scenes drag.`,
+        `Skipped parts of ${movie.title}. ${mainActor}’s okay, but the ${style} love story’s weak.`,
+        `${movie.title}’s romance is forced. ${mainActor} tries, but the ${style} plot’s boring.`
+      ],
+      comedy: [
+        `${movie.title}’s jokes are cringe. ${mainActor} tries, but the ${style} humor’s flat.`,
+        `${movie.title} didn’t make me laugh. ${mainActor}’s gags are weak, ${style} vibe’s off.`,
+        `Tried ${movie.title}, but it’s a miss. ${mainActor}’s okay, but the ${style} jokes flop.`,
+        `${movie.title}’s humor falls flat. ${mainActor}’s effort can’t save the ${style} script.`
+      ],
+      drama: [
+        `${movie.title} feels so dull. ${mainActor}’s acting is fine, but the ${style} story’s flat.`,
+        `${movie.title}’s drama is forced. ${mainActor} tries, but the ${style} pacing’s off.`,
+        `${movie.title} dragged on forever. ${mainActor}’s okay, but the ${style} plot’s weak.`,
+        `${movie.title}’s ${style} story is meh. ${mainActor} can’t save the boring script.`
+      ],
+      horror: [
+        `${movie.title} isn’t scary at all. ${mainActor}’s fear feels fake, ${style} vibe’s weak.`,
+        `${movie.title}’s jump scares suck. ${mainActor} tries, but the ${style} plot’s thin.`,
+        `Bored by ${movie.title}. ${mainActor}’s okay, but the ${style} horror’s a miss.`,
+        `${movie.title}’s ${style} scares are lame. ${mainActor} can’t save the weak script.`
+      ],
+      thriller: [
+        `${movie.title}’s twists are predictable. ${mainActor}’s okay, but the ${style} plot’s weak.`,
+        `${movie.title} lost me halfway. ${mainActor} tries, but the ${style} suspense flops.`,
+        `${movie.title}’s not thrilling at all. ${mainActor}’s fine, but the ${style} story’s dull.`,
+        `${movie.title}’s ${style} vibe is off. ${mainActor} can’t save the boring twists.`
+      ],
+      animation: [
+        `${movie.title}’s visuals are bland. ${mainActor}’s voice is okay, but the ${style} story’s weak.`,
+        `${movie.title} feels like a cash grab. ${mainActor} tries, but the ${style} art’s meh.`,
+        `${movie.title}’s ${style} animation is dull. ${mainActor}’s voice can’t save it.`,
+        `Skipped parts of ${movie.title}. ${mainActor}’s fine, but the ${style} plot’s boring.`
+      ],
+      documentary: [
+        `${movie.title}’s facts are boring. ${mainActor}’s narration is flat, ${style} vibe’s off.`,
+        `${movie.title} feels like a lecture. ${mainActor} tries, but the ${style} story’s dull.`,
+        `${movie.title}’s ${style} truth is meh. ${mainActor}’s voice can’t keep me hooked.`,
+        `${movie.title} dragged on too long. ${mainActor}’s okay, but the ${style} doc’s weak.`
+      ],
+      "sci-fi": [
+        `${movie.title}’s world feels fake. ${mainActor}’s okay, but the ${style} plot’s a mess.`,
+        `${movie.title}’s sci-fi is boring. ${mainActor} tries, but the ${style} story’s weak.`,
+        `${movie.title}’s ${style} vibe flops. ${mainActor} can’t save the dull script.`,
+        `Skipped ${movie.title}. ${mainActor}’s fine, but the ${style} sci-fi’s a miss.`
+      ],
+      fantasy: [
+        `${movie.title}’s magic feels flat. ${mainActor}’s okay, but the ${style} lore’s weak.`,
+        `${movie.title}’s ${style} world is meh. ${mainActor} tries, but the plot’s boring.`,
+        `${movie.title} lacks fantasy spark. ${mainActor}’s fine, but the ${style} story’s dull.`,
+        `${movie.title}’s ${style} quest is weak. ${mainActor} can’t save the lame script.`
+      ],
+      adventure: [
+        `${movie.title}’s journey is boring. ${mainActor} tries, but the ${style} plot’s flat.`,
+        `${movie.title} feels like a slog. ${mainActor}’s okay, but the ${style} adventure’s weak.`,
+        `${movie.title}’s ${style} quest is meh. ${mainActor} can’t save the dull story.`,
+        `Skipped parts of ${movie.title}. ${mainActor}’s fine, but the ${style} vibe’s off.`
+      ],
+      musical: [
+        `${movie.title}’s songs are forgettable. ${mainActor}’s voice is okay, but the ${style} plot’s weak.`,
+        `${movie.title}’s ${style} tunes are flat. ${mainActor} tries, but the story’s boring.`,
+        `${movie.title} feels like a miss. ${mainActor}’s singing is fine, but the ${style} vibe’s off.`,
+        `${movie.title}’s ${style} music is meh. ${mainActor} can’t save the dull script.`
+      ],
+      western: [
+        `${movie.title}’s ${style} grit feels fake. ${mainActor}’s okay, but the plot’s weak.`,
+        `${movie.title}’s western vibe is off. ${mainActor} tries, but the ${style} story’s dull.`,
+        `${movie.title} dragged on too long. ${mainActor}’s fine, but the ${style} duels are meh.`,
+        `${movie.title}’s ${style} West is boring. ${mainActor} can’t save the lame script.`
+      ],
+      historical: [
+        `${movie.title}’s past feels flat. ${mainActor}’s okay, but the ${style} story’s dull.`,
+        `${movie.title}’s ${style} era is boring. ${mainActor} tries, but the plot’s weak.`,
+        `${movie.title} feels like a history lesson. ${mainActor}’s fine, but the ${style} vibe’s off.`,
+        `${movie.title}’s ${style} past is meh. ${mainActor} can’t save the dull script.`
+      ]
+    },
+    sequelRequests: {
+      default: [
+        `Yo, where’s ${movie.title} ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`}? ${mainActor} needs to come back ASAP!`,
+        `Binged ${movie.title} and I’m hooked! Drop ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`} now!`,
+        `${movie.title} was fire! ${mainActor} better return for ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`} soon!`,
+        `Need more ${movie.title}! ${mainActor} killed it, bring on ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`}!`
+      ]
+    },
+    mixed: {
+      default: [
+        `${movie.title} was okay, ${mainActor}’s great but the ${style} story needed more punch.`,
+        `Enjoyed ${movie.title}, but it’s hit-or-miss. ${mainActor} shines, ${style} plot’s so-so.`,
+        `${movie.title} had moments, but ${mainActor} carries a shaky ${style} script.`,
+        `${movie.title}’s ${style} vibe is cool, but ${mainActor} can’t fix the weak parts.`
+      ]
+    }
   };
 
-  const commentCount = isYouTube ? Math.floor(Math.random() * 5 + 5) : Math.floor(Math.random() * 3 + 3);
+  // Generate comments based on score, budget, and talent
   for (let i = 0; i < commentCount; i++) {
     let comment;
-    if (score >= 80 && Math.random() < 0.7) {
-      comment = commentTemplates.positive[Math.floor(Math.random() * commentTemplates.positive.length)];
-    } else if (score < 60 && Math.random() < 0.5) {
-      comment = commentTemplates.negative[Math.floor(Math.random() * commentTemplates.negative.length)];
-    } else if (score >= 75 && Math.random() < 0.3) {
-      comment = commentTemplates.sequelRequests[Math.floor(Math.random() * commentTemplates.sequelRequests.length)];
+    const rand = Math.random();
+    if (score >= 80 && rand < (highBudget || highTalent ? 0.85 : 0.75)) {
+      // High score, high-budget/talent movies get more positive comments
+      comment = commentTemplates.positive[genre][Math.floor(Math.random() * commentTemplates.positive[genre].length)];
+    } else if (score < 60 && rand < (highBudget ? 0.25 : 0.45)) {
+      // Low score, low-budget movies get more negative comments
+      comment = commentTemplates.negative[genre][Math.floor(Math.random() * commentTemplates.negative[genre].length)];
+    } else if (score >= 75 && rand < 0.35 && (highBudget || highTalent)) {
+      // Sequel requests for high-scoring, high-quality movies
+      comment = commentTemplates.sequelRequests.default[Math.floor(Math.random() * commentTemplates.sequelRequests.default.length)];
     } else {
-      comment = commentTemplates.positive[Math.floor(Math.random() * commentTemplates.positive.length)];
+      // Mixed reviews for mid-range scores or to add variety
+      comment = commentTemplates.mixed.default[Math.floor(Math.random() * commentTemplates.mixed.default.length)];
     }
-    comment = comment.replace(/{([^}]+)}/g, (match, key) => replacements[key] || match);
+    // Add platform-specific flair
+    if (isYouTube && Math.random() < 0.3) {
+      comment = comment.toLowerCase() + (Math.random() < 0.5 ? " lol" : " fr");
+    } else if (isYouTube && Math.random() < 0.2) {
+      comment = comment.toUpperCase() + "!!!";
+    }
     comments.push(comment);
   }
+
+  // Shuffle comments to avoid predictable patterns
+  for (let i = comments.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [comments[i], comments[j]] = [comments[j], comments[i]];
+  }
+
   return comments;
 }
 
@@ -2823,7 +3063,6 @@ function checkAwards() {
 }
   </script>
 </body>
-
 </html>
 
 
