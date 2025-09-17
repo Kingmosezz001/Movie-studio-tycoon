@@ -1,13 +1,13 @@
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Movie Studio Tycoon</title>
-  <style>
+  
+<style>
     /* Existing CSS unchanged, except for #moviePanel and .action-buttons */
     body {
       font-family: Arial, sans-serif;
@@ -378,6 +378,87 @@
 #streamingMoviesPanel button:hover {
     background: #e67e22;
 }
+#cinemaPlatform {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+  width: 360px;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  color: #FFD700;
+  max-height: 70vh;
+  overflow-y: auto;
+  display: none;
+}
+#cinemaPlatform select, #cinemaPlatform input[type="range"] {
+  margin-bottom: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
+#cinemaPlatform input[type="range"] {
+  width: 80%;
+}
+#ticketPriceValue {
+  font-weight: bold;
+  color: #ff9800;
+}
+#boxOfficePanel {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+  width: 360px;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  color: #FFD700;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: none;
+}
+#boxOfficeList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+.cinema-release {
+  background: #333;
+  margin: 10px 0;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cinema-release p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+#boxOfficePanel button {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  background: #ff9800;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+#boxOfficePanel button:hover {
+  background: #e67e22;
+}
 #movieReviews {
   background: #1e1e1e;
   padding: 20px;
@@ -431,19 +512,116 @@
   border-radius: 8px;
   border: none;
 }
+/* Random Event Pop-up Styles */
+#eventOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+}
+
+#eventPopup {
+  background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+  border: 2px solid #ff9800;
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 400px;
+  text-align: center;
+  color: #FFD700;
+  box-shadow: 0 10px 30px rgba(255, 152, 0, 0.3);
+  transform: translateY(100vh);
+  animation: slideUpFadeIn 0.5s ease-out forwards, pulse 1s ease-in-out 1s infinite;
+  font-family: 'Arial', sans-serif;
+}
+
+#eventPopup h3 {
+  font-size: 24px;
+  margin: 0 0 15px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#eventPopup p {
+  font-size: 16px;
+  line-height: 1.4;
+  margin: 10px 0;
+}
+
+#eventPopup .emoji {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+@keyframes slideUpFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(100vh);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(255, 152, 0, 0.3); }
+  50% { box-shadow: 0 10px 40px rgba(255, 152, 0, 0.6); }
+}
+
+.closeEvent {
+  background: #ff9800;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.closeEvent:hover {
+  background: #e67e22;
+}
   </style>
 </head>
 <body>
-	<div id="movieReviews" style="display: none;">
-  <h2>🎬 Movie Reviews</h2>
-  <div id="reviewList"></div>
-  <button onclick="closeReviews()">Close</button>
+	<div id="eventOverlay">
+  <div id="eventPopup">
+    <div class="emoji" id="eventEmoji"></div>
+    <h3 id="eventTitle"></h3>
+    <p id="eventDescription"></p>
+    <button class="closeEvent" onclick="closeEventPopup()">OK</button>
+  </div>
 </div>
 	<div id="streamingMoviesPanel" style="display: none;">
     <h2> Streaming Movies</h2>
     <div id="streamingMoviesList"></div>
     <button onclick="closeStreamingMovies()">Close</button>
 </div>
+<div id="cinemaPlatform">
+    <h2>🎦 Launch Cinema Release</h2>
+    <select id="theaterSelect">
+      <option value="">Select Theater Tier</option>
+      <option value='{"name":"Local Theaters","fameRequired":2000,"cost":500,"weeklyRevenue":2000,"weeklyFans":5000,"fameBoost":50,"multiplier":1.0,"description":"Small local cinemas for indie vibes."}'>Local Theaters (Fame: 2K, Cost: $500)</option>
+      <option value='{"name":"National Chains","fameRequired":10000,"cost":2000,"weeklyRevenue":8000,"weeklyFans":20000,"fameBoost":200,"multiplier":1.5,"description":"Wide national release for broader appeal."}'>National Chains (Fame: 10K, Cost: $2K)</option>
+      <option value='{"name":"Global Premiere","fameRequired":50000,"cost":5000,"weeklyRevenue":25000,"weeklyFans":60000,"fameBoost":500,"multiplier":2.0,"description":"Worldwide blockbuster rollout."}'>Global Premiere (Fame: 50K, Cost: $5K)</option>
+    </select>
+    <input type="range" id="ticketPrice" min="5" max="15" value="10" step="1">
+    <label for="ticketPrice">Ticket Price: $<span id="ticketPriceValue">10</span></label>
+    <select id="cinemaMovieSelect">
+      <option value="">Select Movie</option>
+    </select>
+    <p id="theaterDetails">Select a theater tier to see details.</p>
+    <p id="projectedEarnings">Projected Weekly Earnings: $0</p>
+    <button onclick="launchCinemaRelease()">Launch Release</button>
+    <button onclick="closeCinemaPlatform()">Cancel</button>
+  </div>
 	<div id="streamingPlatform">
     <h2> Launch Streaming Release</h2>
     <select id="platformSelect">
@@ -525,6 +703,11 @@
             <span class="stat-label">Awards</span>
             <span id="awards" class="stat-value">0</span>
         </div>
+        <div class="stat-box">
+            <span class="stat-icon">🎦</span>
+            <span class="stat-label">Box Office</span>
+            <span id="totalBoxOffice" class="stat-value">$0</span>
+        </div>
     </div>
 </div>
 
@@ -536,7 +719,9 @@
   <button onclick="hireTalent()">🎭 Hire Talent</button>
   <button onclick="showMovies()">📽️ Movies</button>
   <button onclick="showStreamingMovies()">📺 Streaming Movies</button>
-  <button onclick="showReviews()">📰 Movie Reviews</button>
+  <button onclick="launchCinemaPlatform()">🎦 Launch Cinema Release</button>
+  <button onclick="openFestivalSubmission()">Submit to Festivals</button>
+  <button onclick="openBusinessPanel()">Businesses</button>
 </div>
 
     <div class="control-buttons">
@@ -662,24 +847,34 @@
 
   <script>
     let player = {
-    name: "",
-    fans: 0,
-    money: 1000,
-    level: 1,
-    year: 2025,
-    week: "January 1st",
-    fame: 0,
-    movies: [],
-    youtubeVideos: [],
-    talents: [],
-    subscribers: 0,
-    totalViews: 0,
-    youtubeEarnings: 0,
-    milestonesAchieved: [],
-    activeCampaigns: [],
-    streamingMovies: [], // Add this line
-    reviews: [],
-    awards: [],
+  name: "",
+  fans: 0,
+  money: 1000,
+  level: 1,
+  year: 2025,
+  week: "January 1st",
+  fame: 0,
+  movies: [],
+  youtubeVideos: [],
+  talents: [],
+  subscribers: 0,
+  totalViews: 0,
+  youtubeEarnings: 0,
+  milestonesAchieved: [],
+  activeCampaigns: [],
+  streamingMovies: [],
+  reviews: [],
+  awards: [],
+  eventsThisYear: 0,
+  currentYearEvents: [],
+  cinemaReleases: [],
+  totalBoxOffice: 0,
+  boxOfficeRank: 0,
+  scheduledReleases: [],
+  festivalSubmissions: [],
+  festivalResults: [],
+  businesses: [], // Array to store owned businesses
+  businessInvitationsThisYear: 0 // Track business invitations per year
 };
 
     window.onload = function () {
@@ -691,6 +886,9 @@
     if (!player.hasOwnProperty("youtubeEarnings")) player.youtubeEarnings = 0;
     if (!player.hasOwnProperty("milestonesAchieved")) player.milestonesAchieved = [];
     if (!player.hasOwnProperty("streamingMovies")) player.streamingMovies = [];
+    if (!player.hasOwnProperty("cinemaReleases")) player.cinemaReleases = [];
+    if (!player.hasOwnProperty("totalBoxOffice")) player.totalBoxOffice = 0;
+    if (!player.hasOwnProperty("boxOfficeRank")) player.boxOfficeRank = 0;
     // Ensure existing movies have a duration property
     player.movies.forEach(movie => {
       if (!movie.hasOwnProperty("duration")) movie.duration = movie.type === "short" ? 30 : movie.type === "feature" ? 90 : 45;
@@ -698,6 +896,8 @@
     player.streamingMovies.forEach(movie => {
       if (!movie.hasOwnProperty("duration")) movie.duration = movie.type === "short" ? 30 : movie.type === "feature" ? 90 : 45;
     });
+    if (!player.hasOwnProperty("eventsThisYear")) player.eventsThisYear = 0;
+    if (!player.hasOwnProperty("currentYearEvents")) player.currentYearEvents = [];
     document.getElementById("registration").style.display = "none";
     document.getElementById("loading").style.display = "none";
     document.getElementById("game").style.display = "block";
@@ -741,6 +941,7 @@
       "📽️ Every blockbuster starts small...",
       "🍿 The audience is waiting..."
     ];
+document.getElementById("totalBoxOffice").innerText = formatNumber("money", player.totalBoxOffice);
 
     function registerPlayer() {
       const name = document.getElementById("playerName").value;
@@ -759,6 +960,11 @@
       player.totalViews = 0;
       player.youtubeEarnings = 0;
       player.milestonesAchieved = [];
+      player.eventsThisYear = 0;
+      player.currentYearEvents = [];
+      player.cinemaReleases = [];
+      player.totalBoxOffice = 0;
+      player.boxOfficeRank = 0;
       document.getElementById("registration").style.display = "none";
       document.getElementById("loading").style.display = "block";
 
@@ -788,6 +994,7 @@
         bar.style.width = progress + "%";
       }, 200);
     }
+document.getElementById("totalBoxOffice").innerText = formatNumber("money", player.totalBoxOffice);
 
     function saveGame() {
       localStorage.setItem("movieStudioTycoon", JSON.stringify(player));
@@ -814,6 +1021,11 @@
             milestonesAchieved: [],
             activeCampaigns: [],
             streamingMovies: [],
+            eventsThisYear: 0,
+            currentYearEvents: [],
+            cinemaReleases: [],
+            totalBoxOffice: 0,
+            boxOfficeRank: 0,
         };
         document.getElementById("game").style.display = "none";
         const moviePanel = document.getElementById("moviePanel");
@@ -830,40 +1042,52 @@
   document.getElementById("game").style.display = "none";
   document.getElementById("movieCreation").style.display = "block";
 
-  // Populate sequel/season dropdown
+  // Populate sequel/season dropdown, excluding trailers
   const sequelOrSeasonSelect = document.getElementById("sequelOrSeasonSelect");
   sequelOrSeasonSelect.innerHTML = '<option value="">New Movie</option>';
+
+  // Add movies (non-trailers)
   player.movies.forEach((movie, index) => {
-    const option = document.createElement("option");
-    option.value = index;
-    if (movie.type === "season") {
-      option.innerText = `Next Season: ${movie.title}`;
-    } else if (movie.type === "feature" || movie.type === "short") {
-      option.innerText = `Sequel: ${movie.title}`;
-    } else if (movie.type === "mini-series") {
-      option.innerText = `Next Season: ${movie.title}`;
+    if (!movie.isTrailer) { // Exclude trailers (though movies typically aren’t trailers)
+      const option = document.createElement("option");
+      option.value = index;
+      if (movie.type === "season") {
+        option.innerText = `Next Season: ${movie.title}`;
+      } else if (movie.type === "feature" || movie.type === "short") {
+        option.innerText = `Sequel: ${movie.title}`;
+      } else if (movie.type === "mini-series") {
+        option.innerText = `Next Season: ${movie.title}`;
+      }
+      sequelOrSeasonSelect.appendChild(option);
     }
-    sequelOrSeasonSelect.appendChild(option);
   });
+
+  // Add streaming movies (non-trailers)
   player.streamingMovies.forEach((movie, index) => {
-    const option = document.createElement("option");
-    option.value = `s_${index}`;
-    if (movie.type === "season" || movie.type === "mini-series") {
-      option.innerText = `Next Season: ${movie.title} (Streaming)`;
-    } else if (movie.type === "feature" || movie.type === "short") {
-      option.innerText = `Sequel: ${movie.title} (Streaming)`;
+    if (!movie.isTrailer) { // Exclude trailers
+      const option = document.createElement("option");
+      option.value = `s_${index}`;
+      if (movie.type === "season" || movie.type === "mini-series") {
+        option.innerText = `Next Season: ${movie.title} (Streaming)`;
+      } else if (movie.type === "feature" || movie.type === "short") {
+        option.innerText = `Sequel: ${movie.title} (Streaming)`;
+      }
+      sequelOrSeasonSelect.appendChild(option);
     }
-    sequelOrSeasonSelect.appendChild(option);
   });
+
+  // Add YouTube videos (non-trailers)
   player.youtubeVideos.forEach((video, index) => {
-    const option = document.createElement("option");
-    option.value = `y_${index}`;
-    if (video.isSeries) {
-      option.innerText = `Next Season: ${video.title} (YouTube)`;
-    } else {
-      option.innerText = `Sequel: ${video.title} (YouTube)`;
+    if (!video.isTrailer) { // Exclude trailers
+      const option = document.createElement("option");
+      option.value = `y_${index}`;
+      if (video.isSeries) {
+        option.innerText = `Next Season: ${video.title} (YouTube)`;
+      } else {
+        option.innerText = `Sequel: ${video.title} (YouTube)`;
+      }
+      sequelOrSeasonSelect.appendChild(option);
     }
-    sequelOrSeasonSelect.appendChild(option);
   });
 
   // Reset movie creation form
@@ -1029,6 +1253,11 @@
       } else {
         baseMovie = player.movies[parseInt(selectedValue)];
       }
+      // Check if baseMovie is a trailer
+      if (baseMovie.isTrailer) {
+        alert("Trailers cannot be used as the basis for sequels or seasons!");
+        return;
+      }
       document.getElementById("movieType").value = baseMovie.type === "season" || baseMovie.type === "mini-series" ? baseMovie.type : "feature";
       if (baseMovie.type === "season" || baseMovie.type === "mini-series") {
         document.getElementById("episodeInput").style.display = "block";
@@ -1044,12 +1273,12 @@
       if (baseMovie.type === "season" || baseMovie.type === "mini-series") {
         const seasonNumber = [...player.movies, ...player.streamingMovies, ...player.youtubeVideos]
           .filter(m => m.title.includes(baseMovie.title.split(": Season")[0]) && 
-                      (m.type === "season" || m.type === "mini-series")).length + 1;
+                      (m.type === "season" || m.type === "mini-series") && !m.isTrailer).length + 1;
         document.getElementById("movieTitle").value = `${baseMovie.title.split(": Season")[0]}: Season ${seasonNumber}`;
       } else {
         const sequelNumber = [...player.movies, ...player.streamingMovies, ...player.youtubeVideos]
           .filter(m => m.title.includes(baseMovie.title.split(" Part")[0]) && 
-                      m.type !== "season" && m.type !== "mini-series").length + 1;
+                      m.type !== "season" && m.type !== "mini-series" && !m.isTrailer).length + 1;
         document.getElementById("movieTitle").value = `${baseMovie.title.split(" Part")[0]} Part ${sequelNumber}`;
       }
       // Set duration from base movie if available
@@ -1165,6 +1394,12 @@
       baseMovie = player.movies[parseInt(sequelOrSeasonIndex)];
     }
 
+    // Check if baseMovie is a trailer
+    if (baseMovie.isTrailer) {
+      alert("Trailers cannot be used as the basis for sequels or seasons!");
+      return;
+    }
+
     // Get base genres
     baseGenres = isYouTube ? baseMovie.genre.split(", ") : baseMovie.genres;
     
@@ -1192,12 +1427,12 @@
     if (baseMovie.type === "season" || baseMovie.type === "mini-series") {
       const seasonNumber = [...player.movies, ...player.streamingMovies, ...player.youtubeVideos]
         .filter(m => m.title.includes(baseMovie.title.split(": Season")[0]) && 
-                    (m.type === "season" || m.type === "mini-series")).length + 1;
+                    (m.type === "season" || m.type === "mini-series") && !m.isTrailer).length + 1;
       title = `${baseMovie.title.split(": Season")[0]}: Season ${seasonNumber}`;
     } else {
       const sequelNumber = [...player.movies, ...player.streamingMovies, ...player.youtubeVideos]
         .filter(m => m.title.includes(baseMovie.title.split(" Part")[0]) && 
-                    m.type !== "season" && m.type !== "mini-series").length + 1;
+                    m.type !== "season" && m.type !== "mini-series" && !m.isTrailer).length + 1;
       title = `${baseMovie.title.split(" Part")[0]} Part ${sequelNumber}`;
     }
   }
@@ -1247,7 +1482,7 @@
     genres: genres,
     budget: budget,
     episodeCount: episodeCount,
-    duration: duration, // Store duration in minutes
+    duration: duration,
     fansPerSec: Math.floor((budget / 50) * ((movieType === "season" || movieType === "mini-series") ? episodeCount : 1) * talentMultiplier * durationMultiplier),
     revenuePerSec: Math.floor((budget / 25) * ((movieType === "season" || movieType === "mini-series") ? episodeCount : 1) * talentMultiplier * durationMultiplier),
     talents: selectedTalents,
@@ -1255,16 +1490,16 @@
     productionStartWeek: player.week,
     productionWeeksRequired: productionWeeksRequired
   };
-  
-  // Store movie style in movie object
-movie.style = document.getElementById("movieStyle").value;
 
-// Apply style multiplier
-let styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0; // Traditional boosts fans, Future boosts revenue
-movie.fansPerSec = Math.floor(movie.fansPerSec * styleMultiplier);
-movie.revenuePerSec = Math.floor(movie.revenuePerSec * (movie.style === "future" ? 1.5 : 1.0));
-movie.weeklyFans = Math.floor((movie.weeklyFans || movie.fansPerSec) * styleMultiplier);
-movie.weeklyRevenue = Math.floor((movie.weeklyRevenue || movie.revenuePerSec) * (movie.style === "future" ? 1.5 : 1.0));
+  // Store movie style in movie object
+  movie.style = document.getElementById("movieStyle").value;
+
+  // Apply style multiplier
+  let styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0;
+  movie.fansPerSec = Math.floor(movie.fansPerSec * styleMultiplier);
+  movie.revenuePerSec = Math.floor(movie.revenuePerSec * (movie.style === "future" ? 1.5 : 1.0));
+  movie.weeklyFans = Math.floor((movie.weeklyFans || movie.fansPerSec) * styleMultiplier);
+  movie.weeklyRevenue = Math.floor((movie.weeklyRevenue || movie.revenuePerSec) * (movie.style === "future" ? 1.5 : 1.0));
 
   // Add movie to player's movies
   player.movies.push(movie);
@@ -1287,22 +1522,27 @@ movie.weeklyRevenue = Math.floor((movie.weeklyRevenue || movie.revenuePerSec) * 
     function renderMoviesInPanel(container) {
   container.innerHTML = "";
   const platforms = [
-  { name: "IndieFlicks", fameRequired: 0, cost: 100, weeklyRevenue: 10, weeklyFans: 50, fameBoost: 10, description: "A niche platform for independent films." },
-  { name: "Hula", fameRequired: 1000, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
-  { name: "PrimeView", fameRequired: 2000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
-  { name: "DisStream", fameRequired: 4000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
-  { name: "AppleStream", fameRequired: 6000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
-  { name: "StreamFlix", fameRequired: 10000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
-  { name: "VibeStream", fameRequired: 1400, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
-  { name: "GlobeFlix", fameRequired: 3000, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
-  { name: "StarCast", fameRequired: 5000, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
-  { name: "EpicView", fameRequired: 8000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
-  { name: "NexGenTV", fameRequired: 12000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." },
-];
+    { name: "IndieFlicks", fameRequired: 0, cost: 100, weeklyRevenue: 10, weeklyFans: 50, fameBoost: 10, description: "A niche platform for independent films." },
+    { name: "Hula", fameRequired: 1000, cost: 300, weeklyRevenue: 20, weeklyFans: 100, fameBoost: 25, description: "A growing platform with a broad audience." },
+    { name: "PrimeView", fameRequired: 2000, cost: 500, weeklyRevenue: 30, weeklyFans: 150, fameBoost: 50, description: "A major platform with global reach." },
+    { name: "DisStream", fameRequired: 4000, cost: 800, weeklyRevenue: 40, weeklyFans: 200, fameBoost: 75, description: "A premium platform for family content." },
+    { name: "AppleStream", fameRequired: 6000, cost: 1000, weeklyRevenue: 50, weeklyFans: 250, fameBoost: 100, description: "A high-end platform for prestige films." },
+    { name: "StreamFlix", fameRequired: 10000, cost: 1500, weeklyRevenue: 75, weeklyFans: 400, fameBoost: 150, description: "The dominant streaming service." },
+    { name: "VibeStream", fameRequired: 1400, cost: 400, weeklyRevenue: 25, weeklyFans: 120, fameBoost: 30, description: "A trendy platform for young audiences." },
+    { name: "GlobeFlix", fameRequired: 3000, cost: 600, weeklyRevenue: 35, weeklyFans: 180, fameBoost: 60, description: "A global platform with diverse content." },
+    { name: "StarCast", fameRequired: 5000, cost: 900, weeklyRevenue: 45, weeklyFans: 220, fameBoost: 85, description: "A platform focused on star-driven blockbusters." },
+    { name: "EpicView", fameRequired: 8000, cost: 1200, weeklyRevenue: 60, weeklyFans: 300, fameBoost: 120, description: "A premium service for epic storytelling." },
+    { name: "NexGenTV", fameRequired: 12000, cost: 1800, weeklyRevenue: 90, weeklyFans: 500, fameBoost: 200, description: "A cutting-edge platform for innovative content." },
+  ];
 
   player.movies.forEach((m, index) => {
     let div = document.createElement("div");
     div.className = "movie";
+    // Check for scheduled releases for this movie
+    const scheduledReleases = player.scheduledReleases.filter(r => player.youtubeVideos[r.videoIndex]?.title === m.title);
+    const scheduledText = scheduledReleases.length > 0
+      ? `<p><strong>Scheduled Episodes:</strong> ${scheduledReleases.map(r => `Episode ${r.episode} on ${r.week}`).join(", ")}</p>`
+      : "";
     div.innerHTML = `
       <h3 style="margin: 0 0 8px; color: #FFD700; font-size: 16px;">🎬 ${m.title}</h3>
       <p><strong>Type:</strong> ${m.type}</p>
@@ -1319,9 +1559,28 @@ movie.weeklyRevenue = Math.floor((movie.weeklyRevenue || movie.revenuePerSec) * 
         ${m.talents.length > 0 ? m.talents.map((t) => `<li>${t.name}</li>`).join("") : "<li>None</li>"}
       </ul>
       <p><strong>Awards:</strong> ${player.awards.filter(a => a.title === m.title).map(a => a.name).join(", ") || "None"}</p>
+      ${scheduledText}
     `;
 
     if (!m.released && checkReleaseConditions(m)) {
+      // Add Trailer Release Button
+      if (!player.youtubeVideos.some(v => v.title === m.title && v.isTrailer)) {
+        let trailerButton = document.createElement("button");
+        trailerButton.innerText = "Release Trailer";
+        trailerButton.onclick = function () {
+          postTrailerToYouTube(index);
+        };
+        trailerButton.style = "margin-top: 3px; padding: 6px; width: 90%; border-radius: 8px; border: none; background: #4CAF50; color: white; font-weight: bold; cursor: pointer;";
+        trailerButton.onmouseover = function () {
+          this.style.background = "#45a049";
+        };
+        trailerButton.onmouseout = function () {
+          this.style.background = "#4CAF50";
+        };
+        div.appendChild(trailerButton);
+      }
+
+      // Existing Release Options
       let releaseSelect = document.createElement("select");
       releaseSelect.id = `releaseOption_${index}`;
       releaseSelect.style = "margin-top: 3px; padding: 6px; width: 90%; border-radius: 8px; border: none;";
@@ -1639,6 +1898,10 @@ function renderStreamingMovies(container) {
     if (streamingContainer) {
       renderStreamingMovies(streamingContainer);
     }
+    const boxOfficeContainer = document.getElementById("boxOfficeList");
+    if (boxOfficeContainer) {
+      renderCinemaReleases(boxOfficeContainer);
+    }
     
     // Check for movies ready to release and apply campaign fame boosts
     player.movies.forEach((m) => {
@@ -1689,9 +1952,11 @@ function renderStreamingMovies(container) {
   player.fans += platform.weeklyFans * totalMultiplier;
   movie.released = true;
   movie.platform = platform.name;
-  movie.weeklyRevenue = platform.weeklyRevenue * totalMultiplier;
-  movie.weeklyFans = platform.weeklyFans * totalMultiplier;
+  movie.weeklyRevenue = weeklyRevenue;
+  movie.weeklyFans = weeklyFans;
   movie.weeksSinceRelease = 0;
+  movie.currentEpisode = (movie.type === "season" || movie.type === "mini-series") ? movie.episodeCount : movie.episodeCount; // Release all episodes
+  movie.weeksSinceLastEpisode = 0;
 
   document.getElementById("money").innerText = formatNumber("money", player.money);
   document.getElementById("fame").innerText = formatNumber("fame", player.fame);
@@ -1699,6 +1964,262 @@ function renderStreamingMovies(container) {
   alert(`🎬 ${movie.title} has been released on ${platform.name}! Paid $${formatNumber("money", platform.cost)}, gained ${formatNumber("fame", platform.fameBoost)} fame and ${formatNumber("fans", platform.weeklyFans * totalMultiplier)} fans.${talentMultiplier > 1 ? ` High-profile talent boost: ${talentMultiplier}x fans and revenue!` : ""}`);
   closeStreamingPlatform();
   renderMoviesInPanel(document.getElementById("movieList") || document.createElement("div"));
+}
+
+function launchCinemaPlatform() {
+  document.getElementById("game").style.display = "none";
+  document.getElementById("cinemaPlatform").style.display = "block";
+  renderCinemaTheaters();
+  updateTicketPriceDisplay();
+}
+
+function closeCinemaPlatform() {
+  document.getElementById("cinemaPlatform").style.display = "none";
+  document.getElementById("game").style.display = "block";
+}
+
+function renderCinemaTheaters() {
+  const theaters = [
+    { name: "Local Theaters", fameRequired: 1000, cost: 500, weeklyRevenue: 2000, weeklyFans: 5000, fameBoost: 50, multiplier: 1.0, description: "Small local cinemas for indie vibes." },
+    { name: "National Chains", fameRequired: 10000, cost: 2000, weeklyRevenue: 8000, weeklyFans: 20000, fameBoost: 200, multiplier: 1.5, description: "Wide national release for broader appeal." },
+    { name: "Global Premiere", fameRequired: 50000, cost: 5000, weeklyRevenue: 25000, weeklyFans: 60000, fameBoost: 500, multiplier: 2.0, description: "Worldwide blockbuster rollout." }
+  ];
+
+  const theaterSelect = document.getElementById("theaterSelect");
+  theaterSelect.innerHTML = '<option value="">Select Theater Tier</option>';
+  theaters.forEach(theater => {
+    if (player.fame >= theater.fameRequired) {
+      const option = document.createElement("option");
+      option.value = JSON.stringify(theater);
+      option.innerText = `${theater.name} (Fame: ${formatNumber("fame", theater.fameRequired)}, Cost: $${formatNumber("money", theater.cost)})`;
+      theaterSelect.appendChild(option);
+    }
+  });
+
+  const movieSelect = document.getElementById("cinemaMovieSelect");
+  movieSelect.innerHTML = '<option value="">Select Movie</option>';
+  player.movies.forEach((movie, index) => {
+    if (!movie.released && checkReleaseConditions(movie)) {
+      const option = document.createElement("option");
+      option.value = index;
+      option.innerText = `${movie.title} (${movie.type})`;
+      movieSelect.appendChild(option);
+    }
+  });
+
+  const details = document.getElementById("theaterDetails");
+  theaterSelect.onchange = function() {
+    const selectedTheater = this.value ? JSON.parse(this.value) : null;
+    if (selectedTheater) {
+      details.innerHTML = `
+        <strong>Theater:</strong> ${selectedTheater.name}<br>
+        <strong>Description:</strong> ${selectedTheater.description}<br>
+        <strong>Fame Required:</strong> ${formatNumber("fame", selectedTheater.fameRequired)}<br>
+        <strong>Release Cost:</strong> $${formatNumber("money", selectedTheater.cost)}<br>
+        <strong>Base Weekly Revenue:</strong> $${formatNumber("money", selectedTheater.weeklyRevenue)} × multipliers<br>
+        <strong>Base Weekly Fans:</strong> ${formatNumber("fans", selectedTheater.weeklyFans)} × multipliers<br>
+        <strong>Fame Boost:</strong> +${formatNumber("fame", selectedTheater.fameBoost)}
+      `;
+      updateProjectedEarnings(selectedTheater);
+    } else {
+      details.innerText = "Select a theater tier to see details.";
+      document.getElementById("projectedEarnings").innerText = "Projected Weekly Earnings: $0";
+    }
+  };
+  details.innerText = "Select a theater tier to see details.";
+  movieSelect.onchange = function() {
+    const selectedTheater = theaterSelect.value ? JSON.parse(theaterSelect.value) : null;
+    if (selectedTheater) updateProjectedEarnings(selectedTheater);
+  };
+}
+
+function updateTicketPriceDisplay() {
+  const slider = document.getElementById("ticketPrice");
+  const valueSpan = document.getElementById("ticketPriceValue");
+  slider.oninput = function() {
+    valueSpan.innerText = this.value;
+    const selectedTheater = document.getElementById("theaterSelect").value ? JSON.parse(document.getElementById("theaterSelect").value) : null;
+    if (selectedTheater && document.getElementById("cinemaMovieSelect").value !== "") {
+      updateProjectedEarnings(selectedTheater);
+    }
+  };
+}
+
+function updateProjectedEarnings(theater) {
+  const movieIndex = document.getElementById("cinemaMovieSelect").value;
+  if (movieIndex === "") return;
+  const movie = player.movies[parseInt(movieIndex)];
+  const ticketPrice = parseInt(document.getElementById("ticketPrice").value);
+  const score = calculateReviewScore(movie);
+  const baseTickets = Math.floor((score / 100) * 10000 * (player.fame / 10000) * theater.multiplier);
+  const projectedRevenue = Math.floor(baseTickets * ticketPrice * 0.6);
+  document.getElementById("projectedEarnings").innerText = `Projected Weekly Earnings: $${formatNumber("money", projectedRevenue)} (based on score ${score}/100)`;
+}
+
+function launchCinemaRelease() {
+  const theaterJson = document.getElementById("theaterSelect").value;
+  const movieIndex = document.getElementById("cinemaMovieSelect").value;
+  if (!theaterJson || movieIndex === "") {
+    alert("Please select a theater tier and a movie!");
+    return;
+  }
+  const theater = JSON.parse(theaterJson);
+  const movie = player.movies[parseInt(movieIndex)];
+
+  if (confirm(`Release "${movie.title}" in ${theater.name} for $${formatNumber("money", theater.cost)} at $${document.getElementById("ticketPrice").value}/ticket?`)) {
+    if (player.money < theater.cost) {
+      alert(`Not enough money! Need $${formatNumber("money", theater.cost)}.`);
+      return;
+    }
+
+    const budgetMultiplier = movie.budget === 1000 ? 1 : movie.budget === 2500 ? 1.5 : movie.budget === 5000 ? 2 : movie.budget === 7500 ? 2.5 : 3;
+    let talentMultiplier = 1;
+    const highCostTalents = movie.talents.filter(t => t.price >= 20000);
+    if (highCostTalents.length > 0) {
+      const highestPrice = Math.max(...highCostTalents.map(t => t.price));
+      if (highestPrice >= 100001) talentMultiplier = 4;
+      else if (highestPrice >= 50001) talentMultiplier = 3;
+      else talentMultiplier = 2;
+    }
+    const durationMultiplier = movie.duration / (movie.type === "short" ? 30 : movie.type === "feature" ? 90 : 45);
+    const adjustedDuration = durationMultiplier > 2 ? 2 + (durationMultiplier - 2) * 0.5 : durationMultiplier;
+    const styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0;
+    const totalMultiplier = budgetMultiplier * talentMultiplier * adjustedDuration * styleMultiplier;
+
+    player.money -= theater.cost;
+    player.fame += theater.fameBoost;
+    const score = calculateReviewScore(movie);
+    const ticketPrice = parseInt(document.getElementById("ticketPrice").value);
+    const baseTickets = Math.floor((score / 100) * 50000 * (player.fame / 10000) * theater.multiplier);
+    const weeklyRevenue = Math.floor(baseTickets * ticketPrice * 0.6 * totalMultiplier);
+    const weeklyFans = Math.floor(theater.weeklyFans * totalMultiplier);
+
+    const cinemaRelease = {
+      title: movie.title,
+      tier: theater.name,
+      ticketPrice: ticketPrice,
+      weeksRemaining: 8 + Math.floor(Math.random() * 5),
+      totalRevenue: 0,
+      weeklyRevenue: weeklyRevenue,
+      score: score,
+      active: true,
+      multipliers: totalMultiplier
+    };
+
+    player.cinemaReleases.push(cinemaRelease);
+    player.movies.splice(parseInt(movieIndex), 1);
+    player.totalBoxOffice += weeklyRevenue * cinemaRelease.weeksRemaining * 0.7;
+    generateRhymingReviews(movie, theater.name, score);
+
+    document.getElementById("money").innerText = formatNumber("money", player.money);
+    document.getElementById("fame").innerText = formatNumber("fame", player.fame);
+    document.getElementById("fans").innerText = formatNumber("fans", player.fans);
+    alert(`🎦 "${movie.title}" premiered in ${theater.name}! Cost: $${formatNumber("money", theater.cost)}, Fame +${formatNumber("fame", theater.fameBoost)}, Projected Total: $${formatNumber("money", player.totalBoxOffice)}. Score: ${score}/100. ${talentMultiplier > 1 ? `Talent boost: ${talentMultiplier}x!` : ""} ${adjustedDuration !== 1 ? `Duration: ${adjustedDuration.toFixed(1)}x!` : ""}`);
+    closeCinemaPlatform();
+    renderMoviesInPanel(document.getElementById("movieList") || document.createElement("div"));
+  }
+}
+
+function showCinemaReleases() {
+  const existingPanel = document.getElementById("boxOfficePanel");
+  if (existingPanel) existingPanel.remove();
+
+  let panel = document.createElement("div");
+  panel.id = "boxOfficePanel";
+  let list = document.createElement("div");
+  list.id = "boxOfficeList";
+  renderCinemaReleases(list);
+
+  let closeButton = document.createElement("button");
+  closeButton.innerText = "Close";
+  closeButton.onclick = function() { panel.remove(); };
+
+  let header = document.createElement("h2");
+  header.innerText = "🎦 Cinema Box Office";
+
+  panel.appendChild(header);
+  panel.appendChild(list);
+  panel.appendChild(closeButton);
+  document.body.appendChild(panel);
+}
+
+function renderCinemaReleases(container) {
+  container.innerHTML = "";
+  player.cinemaReleases.forEach((release, index) => {
+    let div = document.createElement("div");
+    div.className = "cinema-release";
+    div.innerHTML = `
+      <h3 style="color: #FFD700;">🎦 ${release.title}</h3>
+      <p><strong>Theater:</strong> ${release.tier}</p>
+      <p><strong>Ticket Price:</strong> $${release.ticketPrice}</p>
+      <p><strong>Score:</strong> ${release.score}/100</p>
+      <p><strong>Weeks Left:</strong> ${release.weeksRemaining}</p>
+      <p><strong>Weekly Revenue:</strong> $${formatNumber("money", release.weeklyRevenue)}</p>
+      <p><strong>Total Earned:</strong> $${formatNumber("money", release.totalRevenue)}</p>
+      <p><strong>Status:</strong> ${release.active ? "Running" : "Ended"}</p>
+      ${release.weeksRemaining <= 0 ? `<button onclick="extendRun(${index})">Extend Run ($1K)</button>` : ""}
+    `;
+    container.appendChild(div);
+  });
+  if (player.cinemaReleases.length === 0) {
+    container.innerHTML = "<p>No active cinema releases.</p>";
+  }
+}
+
+function extendRun(index) {
+  const release = player.cinemaReleases[index];
+  if (player.money >= 1000) {
+    player.money -= 1000;
+    release.weeksRemaining += 4;
+    release.active = true;
+    alert(`Extended "${release.title}" run by 4 weeks!`);
+    document.getElementById("money").innerText = formatNumber("money", player.money);
+    renderCinemaReleases(document.getElementById("boxOfficeList"));
+  } else {
+    alert("Need $1,000 to extend!");
+  }
+}
+
+function generateRhymingReviews(movie, platform, score) {
+  const review = {
+    title: movie.title,
+    platform: platform,
+    score: score,
+    comments: generateRhymingComments(movie, score),
+    isSeries: movie.type === "season" || movie.type === "mini-series",
+    currentEpisode: movie.currentEpisode || 1
+  };
+  player.reviews.push(review);
+}
+
+function generateRhymingComments(movie, score) {
+  const genre = movie.genres[0].toLowerCase();
+  const templates = {
+    positive: {
+      action: ["This action blast is pure delight, with chases wild and fights that bite! Explosions roar, the hero's grand, a box office hit across the land!"],
+      drama: ["Hearts ache deep in this tale so true, emotions swell like morning dew. Performances that pierce the soul, a drama whole that makes us whole."],
+      comedy: ["Laughs erupt in this funny spree, gags that tickle endlessly! Wit so sharp, it cuts the gloom, a comedy boom that lights the room."]
+    },
+    mixed: {
+      action: ["Action packs a punch, it's clear, but plot twists veer a bit too near. Stunts amaze, yet story lags, a thrilling ride with some dragged bags."],
+      drama: ["Drama stirs the quiet night, but pacing fights the heartfelt bite. Moments shine, though some feel flat, a mixed bag, imagine that."],
+      comedy: ["Jokes land some, but others flop, this comedy's a quirky hop. Chuckles come, then silence falls, not all gold, but has its calls."]
+    },
+    negative: {
+      action: ["Action flops with stunts so lame, plot's a game no one can claim. Heroes dull, effects a bore, this film's a snore forevermore."],
+      drama: ["Drama drags through scenes so gray, tears won't flow, just fade away. Acting tries, but script's a mess, a tearless stress, I must confess."],
+      comedy: ["Comedy's jokes fall flat and dry, no laughs to lift the weary sigh. Gags misfire, the punchlines miss, this flick's amiss, a comic abyss."]
+    }
+  };
+  const tone = score >= 80 ? "positive" : score >= 50 ? "mixed" : "negative";
+  const genreTemplate = templates[tone][genre] || templates[tone].drama;
+  const comments = [genreTemplate[Math.floor(Math.random() * genreTemplate.length)]];
+  if (Math.random() > 0.5) {
+    const extraTone = tone === "positive" ? "mixed" : tone;
+    const extraGenre = templates[extraTone][genre] || templates[extraTone].drama;
+    comments.push(extraGenre[0]);
+  }
+  return comments;
 }
 
     function manageYouTubeChannel() {
@@ -1834,13 +2355,37 @@ generateReviews(video, "YouTube", true);
     }
   }
   container.innerHTML = "";
+  const weeks = [
+    "January 1st", "January 8th", "January 15th", "January 22nd", "January 29th",
+    "February 5th", "February 12th", "February 19th", "February 26th",
+    "March 5th", "March 12th", "March 19th", "March 26th",
+    "April 2nd", "April 9th", "April 16th", "April 23rd", "April 30th",
+    "May 7th", "May 14th", "May 21st", "May 28th",
+    "June 4th", "June 11th", "June 18th", "June 25th",
+    "July 2nd", "July 9th", "July 16th", "July 23rd", "July 30th",
+    "August 6th", "August 13th", "August 20th", "August 27th",
+    "September 3rd", "September 10th", "September 17th", "September 24th",
+    "October 1st", "October 8th", "October 15th", "October 22nd", "October 29th",
+    "November 5th", "November 12th", "November 19th", "November 26th",
+    "December 3rd", "December 10th", "December 17th", "December 24th"
+  ];
   player.youtubeVideos.forEach((video, index) => {
     let div = document.createElement("div");
     div.className = "youtube-video";
+    let scheduleSelect = "";
+    if (video.isSeries && video.currentEpisode < video.totalEpisodes && video.weeksSinceLastEpisode >= 2) {
+      scheduleSelect = `
+        <select id="scheduleWeek_${index}" style="margin-top: 5px; padding: 5px;">
+          <option value="">Schedule Episode ${video.currentEpisode + 1}</option>
+          ${weeks.map(w => `<option value="${w}">${w}</option>`).join("")}
+        </select>
+        <button onclick="scheduleYouTubeEpisode(${index}, document.getElementById('scheduleWeek_${index}').value)">Schedule</button>
+      `;
+    }
     div.innerHTML = `
       <div class="video-header">
         <span style="font-size: 40px; margin-right: 10px;">${video.thumbnail}</span>
-        <strong>🎬 ${video.title}${video.isViral ? " 🔥" : ""}</strong>
+        <strong>🎬 ${video.title}${video.isViral ? " 🔥" : ""}${video.isTrailer ? " (Trailer)" : ""}</strong>
       </div>
       <p><strong>Genre:</strong> ${video.genre}</p>
       <p><strong>Views:</strong> ${formatNumber("fans", video.views)}</p>
@@ -1852,6 +2397,7 @@ generateReviews(video, "YouTube", true);
       ${video.isSeries && video.currentEpisode < video.totalEpisodes && video.weeksSinceLastEpisode >= 2
         ? `<button onclick="releaseNextYouTubeEpisode(${index})">Release Episode ${video.currentEpisode + 1}</button>`
         : ""}
+      ${scheduleSelect}
     `;
     container.appendChild(div);
   });
@@ -2496,6 +3042,40 @@ movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * (movie.style === "future"
         player.year = parseInt(player.year) + 1;
     }
 
+// Detect new year for events reset
+    const oldYear = parseInt(player.year);
+    if (currentIndex < weeks.length - 1) {
+        player.week = weeks[currentIndex + 1];
+    } else {
+        player.week = weeks[0];
+        player.year = parseInt(player.year) + 1;
+    }
+    if (parseInt(player.year) > oldYear) {
+        player.eventsThisYear = 0;
+        player.currentYearEvents = [];
+        alert(`🎉 Happy New Year ${player.year}! Fresh opportunities await.`);
+    }
+    if (parseInt(player.year) > oldYear) {
+  player.eventsThisYear = 0;
+  player.currentYearEvents = [];
+  player.businessInvitationsThisYear = 0; // Reset business invitations
+  alert(`🎉 Happy New Year ${player.year}! Fresh opportunities await.`);
+}
+    
+    // Process scheduled YouTube episode releases
+  player.scheduledReleases = player.scheduledReleases.filter(release => {
+    if (release.week === player.week) {
+      releaseNextYouTubeEpisode(release.videoIndex);
+      return false; // Remove processed schedule
+    }
+    return true;
+  });
+  
+    // Random event chance ( ~1/4 weeks, adjusted for year cap)
+    if (Math.random() < 0.25 && player.eventsThisYear < 12) {
+      triggerRandomEvent();
+    }
+    
     // Apply weekly earnings and fan growth
     player.movies.forEach((m) => {
         if (m.released) {
@@ -2510,29 +3090,27 @@ movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * (movie.style === "future"
     });
 
     player.streamingMovies.forEach((movie) => {
-  if (movie.released) {
-    // For series, only apply earnings if an episode has been recently released
-    if (movie.type === "season" || movie.type === "mini-series") {
-      if (movie.currentEpisode <= movie.episodeCount && movie.weeksSinceLastEpisode <= 2) {
+    if (movie.released) {
+      if (movie.type === "season" || movie.type === "mini-series") {
+        if (movie.currentEpisode <= movie.episodeCount && movie.weeksSinceLastEpisode <= 2) {
+          player.fans += movie.weeklyFans || 0;
+          player.money += movie.weeklyRevenue || 0;
+        }
+      } else {
+        // Non-series movies apply earnings as usual
         player.fans += movie.weeklyFans || 0;
         player.money += movie.weeklyRevenue || 0;
       }
-    } else {
-      // Non-series movies apply earnings as usual
-      player.fans += movie.weeklyFans || 0;
-      player.money += movie.weeklyRevenue || 0;
+      movie.weeksSinceLastEpisode = (movie.weeksSinceLastEpisode || 0) + 1;
+      movie.weeksSinceRelease += 1;
+      if (movie.weeksSinceRelease <= 10) {
+        const decayRate = 0.9;
+        const decayFactor = Math.pow(decayRate, movie.weeksSinceRelease);
+        movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * decayFactor);
+        movie.weeklyFans = Math.floor(movie.weeklyFans * decayFactor);
+      }
     }
-    movie.weeksSinceLastEpisode = (movie.weeksSinceLastEpisode || 0) + 1;
-    movie.weeksSinceRelease += 1; // Increment continuously
-    if (movie.weeksSinceRelease <= 10) {
-      // Apply decay only for first 10 weeks
-      const decayRate = 0.9;
-      const decayFactor = Math.pow(decayRate, movie.weeksSinceRelease);
-      movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * decayFactor);
-      movie.weeklyFans = Math.floor(movie.weeklyFans * decayFactor);
-    }
-  }
-});
+  });
 
     player.youtubeVideos.forEach((video) => {
     if (video.isSeries) {
@@ -2585,6 +3163,93 @@ movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * (movie.style === "future"
     player.fans += Math.floor(weeklyViews * 0.05);
     player.fame += Math.floor(weeklyViews / 10000 + player.subscribers / 1000);
 
+// Trailer reactions
+  player.youtubeVideos.forEach((video, index) => {
+    if (video.isTrailer && (video.weeksSinceRelease === 1 || video.weeksSinceRelease === 2)) {
+      const reactions = [
+        `Fans are buzzing about ${video.title} trailer! "That ${video.genre.split(", ")[0]} vibe looks epic!"`,
+        `Social media's hyped for ${video.title}! "Can’t wait for this ${video.genre.split(", ")[0]} drop!"`,
+        `${video.title} trailer’s got people talking! "Those visuals? Insane!"`,
+        `Huge reaction to ${video.title} trailer! "Is it ${player.week} yet?!"`
+      ];
+      const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+      showEventPopup("📣", `${video.title} Trailer Buzz`, reaction);
+    }
+  });
+  
+// Cinema box office updates
+    player.cinemaReleases.forEach(release => {
+      if (release.active && release.weeksRemaining > 0) {
+        let decay = 1;
+        if (release.weeksRemaining < 4) decay = 1 - (4 - release.weeksRemaining) * 0.05;
+        const weeklyEarn = Math.floor(release.weeklyRevenue * decay);
+        player.money += weeklyEarn;
+        player.fans += Math.floor(weeklyEarn / 10);
+        release.totalRevenue += weeklyEarn;
+        player.totalBoxOffice += weeklyEarn;
+        release.weeksRemaining--;
+        if (release.weeksRemaining <= 0) {
+          release.active = false;
+          player.fame += Math.floor(release.totalRevenue / 1000);
+          alert(`🎦 "${release.title}" cinema run ended! Total: $${formatNumber("money", release.totalRevenue)}`);
+        }
+      }
+    });
+
+player.businesses.forEach(business => {
+  // Calculate weekly return with volatility based on risk
+  let volatility = business.risk === "low" ? 0.005 : business.risk === "low-medium" ? 0.01 : business.risk === "medium" ? 0.02 : 0.03;
+  const weeklyBase = business.baseReturnRate / 52; // Annual to weekly
+  const randomFactor = 1 + (Math.random() * 2 - 1) * volatility; // +/- volatility
+  const weeklyReturn = business.currentValue * weeklyBase * randomFactor;
+  
+  // Profit or loss
+  const isProfit = weeklyReturn > 0;
+  business.currentValue += weeklyReturn;
+  player.money += weeklyReturn;
+  business.performanceHistory.push(weeklyReturn);
+
+  // Fan impact: Positive performance gains fans, negative loses some
+  const fanChange = Math.floor(business.fanImpact * (isProfit ? Math.random() * 0.5 : -Math.random() * 0.3));
+  player.fans += fanChange;
+
+  // Fame impact based on prestige
+  const fameChange = Math.floor((business.prestige === "medium" ? 50 : business.prestige === "high" ? 100 : 150) * (isProfit ? 1 : -0.5));
+  player.fame += fameChange;
+
+  // Occasional fan talk popup (10% chance per business per week)
+  if (Math.random() < 0.1) {
+    const tone = isProfit ? "positive" : "negative";
+    const messages = {
+      positive: [
+        `Fans are raving about your ${business.name}! "Love the new merch – it's boosting my movie obsession!" +${formatNumber("fans", Math.abs(fanChange))} fans.`,
+        `Social media buzz: "${business.name} is a hit! Can't wait for more tie-ins." +${formatNumber("fame", Math.abs(fameChange))} fame.`
+      ],
+      negative: [
+        `Fans disappointed with ${business.name}: "Expected better quality – hope it improves." -${formatNumber("fans", Math.abs(fanChange))} fans.`,
+        `Critics note: "${business.name} facing setbacks, affecting studio rep." -${formatNumber("fame", Math.abs(fameChange))} fame.`
+      ]
+    };
+    const message = messages[tone][Math.floor(Math.random() * messages[tone].length)];
+    showEventPopup("📣", `${business.name} Update`, message);
+  }
+});
+
+    // Simple competitor simulation for rank
+    const competitors = Array.from({length: 5}, () => ({
+      sales: Math.floor(Math.random() * 50000) + 10000
+    }));
+    const playerSales = player.cinemaReleases.reduce((sum, r) => sum + (r.active ? r.weeklyRevenue : 0), 0);
+    const allSales = [...competitors.map(c => c.sales), playerSales];
+    const sorted = allSales.sort((a, b) => b - a);
+    player.boxOfficeRank = sorted.indexOf(playerSales) + 1;
+    if (player.boxOfficeRank <= 3 && playerSales > 0) {
+      player.fame += (4 - player.boxOfficeRank) * 100;
+      player.money += Math.floor(playerSales * 0.1);
+      alert(`🏆 Your film ranked #${player.boxOfficeRank} at box office! +${(4 - player.boxOfficeRank) * 100} fame.`);
+    }
+    document.getElementById("totalBoxOffice").innerText = formatNumber("money", player.totalBoxOffice);
+    
     // Update active campaigns
     const activeCampaigns = [];
     player.activeCampaigns.forEach((campaign) => {
@@ -2629,6 +3294,63 @@ movie.weeklyRevenue = Math.floor(movie.weeklyRevenue * (movie.style === "future"
     if (document.getElementById("promotionCampaign").style.display === "block") {
         updatePromotionTargetDropdown();
     }
+
+[...player.streamingMovies, ...player.youtubeVideos, ...player.cinemaReleases].forEach(item => {
+  const isCinema = item.hasOwnProperty("ticketPrice");
+  const title = isCinema ? item.title : item.title;
+  const platform = isCinema ? item.tier : (item.platform || "YouTube");
+  if ((item.weeksSinceRelease === 1 || item.weeksSinceLastEpisode === 1) && Math.random() < 0.5) {
+    const review = player.reviews.find(r => r.title === title);
+    const score = review ? review.score : 50;
+    const tone = score >= 80 ? "positive" : score >= 50 ? "mixed" : "negative";
+    const genre = item.genre ? item.genre.split(", ")[0].toLowerCase() : item.genres[0].toLowerCase();
+    const buzzTemplates = {
+      positive: {
+        action: [`"${title}" storms ${platform} with might,\nFans cheer loud, it’s pure delight!`],
+        drama: [`"${title}" on ${platform} pulls heartstrings tight,\nCritics praise its emotional flight!`],
+        comedy: [`"${title}" makes ${platform} laugh with glee,\nA comedy hit for all to see!`]
+      },
+      mixed: {
+        action: [`"${title}" on ${platform} has some spark,\nBut critics say it misses the mark.`],
+        drama: [`"${title}" tries on ${platform} to sway,\nYet some scenes drift, or so they say.`],
+        comedy: [`"${title}" on ${platform} brings a grin,\nThough some jokes flop, they don’t all win.`]
+      },
+      negative: {
+        action: [`"${title}" on ${platform} aimed to soar,\nBut action falls flat, fans wanted more.`],
+        drama: [`"${title}" on ${platform} sought to weep,\nYet feels shallow, the drama’s cheap.`],
+        comedy: [`"${title}" on ${platform} tried to jest,\nBut laughs are few, it’s not the best.`]
+      }
+    };
+    const message = (buzzTemplates[tone][genre] || buzzTemplates[tone].drama)[0];
+    showEventPopup("📣", `${title} Buzz`, message);
+  }
+});
+
+// Process festival submissions (judge after 2 weeks)
+player.festivalSubmissions = player.festivalSubmissions.filter(sub => {
+  const weeks = [
+    "January 1st", "January 8th", "January 15th", "January 22nd", "January 29th",
+    "February 5th", "February 12th", "February 19th", "February 26th",
+    "March 5th", "March 12th", "March 19th", "March 26th",
+    "April 2nd", "April 9th", "April 16th", "April 23rd", "April 30th",
+    "May 7th", "May 14th", "May 21st", "May 28th",
+    "June 4th", "June 11th", "June 18th", "June 25th",
+    "July 2nd", "July 9th", "July 16th", "July 23rd", "July 30th",
+    "August 6th", "August 13th", "August 20th", "August 27th",
+    "September 3rd", "September 10th", "September 17th", "September 24th",
+    "October 1st", "October 8th", "October 15th", "October 22nd", "October 29th",
+    "November 5th", "November 12th", "November 19th", "November 26th",
+    "December 3rd", "December 10th", "December 17th", "December 24th"
+  ];
+  const currentIndex = weeks.indexOf(player.week);
+  const submitIndex = weeks.indexOf(sub.weekSubmitted);
+  const weeksPassed = (currentIndex - submitIndex + 52) % 52;
+  if (weeksPassed >= 2 && sub.yearSubmitted === player.year) {
+    // Already processed in submitToFestival, so just remove from active submissions
+    return false;
+  }
+  return true;
+});
 
     checkAwards();
     checkSubscriberMilestones();
@@ -2746,290 +3468,6 @@ function calculateReviewScore(movie) {
   return Math.round(score);
 }
 
-function generateComments(movie, score, isYouTube) {
-  const comments = [];
-  const mainActor = movie.talents.find(t => t.name.includes("Adekola") || t.name.includes("Adebayo") || t.name.includes("Hanks"))?.name || movie.talents[0]?.name || "the cast";
-  const isSeries = movie.type === "season" || movie.type === "mini-series";
-  const nextPart = [...player.movies, ...player.streamingMovies, ...player.youtubeVideos]
-    .filter(m => m.title.includes(movie.title.split(" Part")[0]) && !m.isSeries).length + 2;
-  const nextSeason = [...player.streamingMovies, ...player.youtubeVideos]
-    .filter(m => m.title.includes(movie.title.split(": Season")[0]) && (m.type === "season" || m.type === "mini-series")).length + 2;
-  const highBudget = movie.budget >= 5000;
-  const highTalent = movie.talents.some(t => t.price >= 20000);
-  const style = movie.style || "modern";
-  const genre = movie.genres[0].toLowerCase();
-
-  // Base comment count on platform and movie quality
-  const commentCount = isYouTube ? Math.floor(Math.random() * 8 + 10) : Math.floor(Math.random() * 5 + 6);
-
-  // Realistic comment templates with specific, grounded reactions
-  const commentTemplates = {
-    positive: {
-      action: [
-        `Yo, ${movie.title} had me hyped! ${mainActor} killing it with those insane stunts, and the ${style} explosions? Next-level!`,
-        `Just watched ${movie.title} and wow, the action’s relentless. That final chase scene? My heart’s still racing!`,
-        `${movie.title} is pure adrenaline. ${mainActor}’s fight scenes are 🔥, tho the plot’s a bit predictable.`,
-        `Can we talk about how ${movie.title} nails the ${style} vibe? ${mainActor} carries it, but those CGI effects stole the show!`
-      ],
-      romance: [
-        `${movie.title} got me in my feels 🥰. ${mainActor} and the lead have crazy chemistry, but that ending? I need tissues!`,
-        `Obsessed with ${movie.title}! The ${style} love story hits different, though ${mainActor}’s monologue was a tad long.`,
-        `${movie.title} is peak romance. That ${style} setting? Gorgeous. ${mainActor} made me believe in love again.`,
-        `Watched ${movie.title} last night, and ${mainActor}’s charm is unreal. The breakup scene wrecked me!`
-      ],
-      comedy: [
-        `${movie.title} had me dying 😂 ${mainActor}’s one-liners are gold, but some jokes didn’t land.`,
-        `Okay, ${movie.title} is hilarious! That ${style} humor with ${mainActor}? I’m quoting it all week!`,
-        `${movie.title}’s a riot, but ${mainActor} carries it. The side characters were kinda meh.`,
-        `Laughed so hard at ${movie.title}! ${style} comedy done right, though the second act dragged a bit.`
-      ],
-      drama: [
-        `${movie.title} hit me hard. ${mainActor}’s performance is Oscar-worthy, but the pacing’s slow in parts.`,
-        `Cried my eyes out watching ${movie.title}. The ${style} storytelling is so raw, ${mainActor} crushed it!`,
-        `${movie.title} is heavy but worth it. ${mainActor}’s scenes are intense, tho the ending felt rushed.`,
-        `${movie.title}’s ${style} drama is gripping. ${mainActor} owns every scene, but the script needed more polish.`
-      ],
-      horror: [
-        `${movie.title} scared the heck outta me! ${mainActor}’s screams felt too real, but the jump scares got old.`,
-        `${movie.title}’s ${style} creepy vibe is unreal. ${mainActor} sells the fear, but the ending was meh.`,
-        `Couldn’t sleep after ${movie.title}! Those ${style} visuals are haunting, ${mainActor} was solid.`,
-        `${movie.title} gave me chills! ${mainActor}’s acting is top-tier, but the plot’s a bit thin.`
-      ],
-      thriller: [
-        `${movie.title} kept me guessing! ${mainActor}’s intensity is wild, but some twists were too obvious.`,
-        `Edge of my seat for ${movie.title}! ${style} suspense is killer, ${mainActor} nails the vibe.`,
-        `${movie.title}’s plot twists? Insane. ${mainActor} is a beast, but the climax felt a bit off.`,
-        `Binged ${movie.title} and wow, ${mainActor} carries the ${style} tension. Wish the ending hit harder.`
-      ],
-      animation: [
-        `${movie.title}’s visuals are stunning! The ${style} art pops, and ${mainActor}’s voice acting is perfect.`,
-        `Kids and I loved ${movie.title}! ${style} animation is gorgeous, but ${mainActor} steals the show.`,
-        `${movie.title} is a visual feast! ${style} colors are wild, tho the story’s a bit simple.`,
-        `${movie.title}’s ${style} world is magical. ${mainActor}’s voice fits perfectly, but pacing’s uneven.`
-      ],
-      documentary: [
-        `${movie.title} opened my eyes! The ${style} storytelling is gripping, ${mainActor}’s narration is spot-on.`,
-        `${movie.title} is a must-watch. ${style} facts hit hard, but ${mainActor}’s voice drags at times.`,
-        `Learned so much from ${movie.title}! ${style} approach is fresh, ${mainActor} keeps it engaging.`,
-        `${movie.title}’s ${style} truth bombs are wild. ${mainActor}’s delivery is solid, but it’s a bit long.`
-      ],
-      "sci-fi": [
-        `${movie.title} blew my mind! ${mainActor} in that ${style} universe? I’m ready for a sequel!`,
-        `${movie.title}’s ${style} sci-fi is epic. ${mainActor} kills it, but the tech jargon got heavy.`,
-        `Obsessed with ${movie.title}’s world! ${mainActor} shines, but the ${style} plot’s a bit messy.`,
-        `${movie.title} takes you to another galaxy. ${mainActor}’s role is dope, but pacing’s off.`
-      ],
-      fantasy: [
-        `${movie.title}’s ${style} magic is unreal! ${mainActor} slays, but the world-building needs more.`,
-        `${movie.title} feels like a dream! ${mainActor}’s epic, but the ${style} lore’s a bit much.`,
-        `Loved ${movie.title}’s ${style} vibe! ${mainActor}’s quest is fire, but the ending’s rushed.`,
-        `${movie.title} is pure fantasy gold. ${mainActor} shines, but some CGI was iffy.`
-      ],
-      adventure: [
-        `${movie.title}’s ${style} journey is wild! ${mainActor}’s energy is unreal, but the plot’s thin.`,
-        `Couldn’t look away from ${movie.title}! ${mainActor} nails the ${style} adventure, but pacing’s slow.`,
-        `${movie.title} takes you places! ${mainActor}’s epic, but the ${style} stakes felt low.`,
-        `${movie.title}’s ${style} quest is dope. ${mainActor} kills it, but the climax was meh.`
-      ],
-      musical: [
-        `${movie.title}’s songs are stuck in my head! ${mainActor}’s voice is fire, but the ${style} story’s weak.`,
-        `${movie.title} is a musical vibe! ${mainActor} slays, but some ${style} numbers drag.`,
-        `Singing along to ${movie.title}! ${mainActor}’s pipes are unreal, but the ${style} plot’s thin.`,
-        `${movie.title}’s ${style} tunes are catchy. ${mainActor} shines, but the pacing’s off.`
-      ],
-      western: [
-        `${movie.title}’s ${style} grit is real! ${mainActor}’s showdowns are fire, but the story’s slow.`,
-        `${movie.title} feels like a classic! ${mainActor}’s drawl is perfect, but the ${style} pacing drags.`,
-        `Loved ${movie.title}’s ${style} vibe! ${mainActor} kills it, but the plot’s predictable.`,
-        `${movie.title}’s ${style} duels are epic. ${mainActor} shines, but the ending’s weak.`
-      ],
-      historical: [
-        `${movie.title} brings history to life! ${mainActor}’s role is unreal, but the ${style} pacing’s slow.`,
-        `${movie.title}’s ${style} era feels so real. ${mainActor} kills it, but the script’s dry.`,
-        `Learned a ton from ${movie.title}! ${mainActor}’s epic, but the ${style} details overwhelm.`,
-        `${movie.title}’s ${style} past is gripping. ${mainActor} shines, but the runtime’s long.`
-      ]
-    },
-    negative: {
-      action: [
-        `${movie.title} tried too hard. ${mainActor}’s stunts feel forced, and the ${style} effects look cheap.`,
-        `${movie.title}’s action is meh. ${mainActor}’s okay, but the ${style} plot’s a mess.`,
-        `Wanted to love ${movie.title}, but ${mainActor} can’t save the weak ${style} script.`,
-        `${movie.title}’s fights are dull. ${mainActor} tries, but the ${style} vibe’s flat.`
-      ],
-      romance: [
-        `${movie.title}’s love story flops. ${mainActor} has no chemistry, and the ${style} vibe’s off.`,
-        `${movie.title} feels so fake. ${mainActor}’s romance is bland, ${style} scenes drag.`,
-        `Skipped parts of ${movie.title}. ${mainActor}’s okay, but the ${style} love story’s weak.`,
-        `${movie.title}’s romance is forced. ${mainActor} tries, but the ${style} plot’s boring.`
-      ],
-      comedy: [
-        `${movie.title}’s jokes are cringe. ${mainActor} tries, but the ${style} humor’s flat.`,
-        `${movie.title} didn’t make me laugh. ${mainActor}’s gags are weak, ${style} vibe’s off.`,
-        `Tried ${movie.title}, but it’s a miss. ${mainActor}’s okay, but the ${style} jokes flop.`,
-        `${movie.title}’s humor falls flat. ${mainActor}’s effort can’t save the ${style} script.`
-      ],
-      drama: [
-        `${movie.title} feels so dull. ${mainActor}’s acting is fine, but the ${style} story’s flat.`,
-        `${movie.title}’s drama is forced. ${mainActor} tries, but the ${style} pacing’s off.`,
-        `${movie.title} dragged on forever. ${mainActor}’s okay, but the ${style} plot’s weak.`,
-        `${movie.title}’s ${style} story is meh. ${mainActor} can’t save the boring script.`
-      ],
-      horror: [
-        `${movie.title} isn’t scary at all. ${mainActor}’s fear feels fake, ${style} vibe’s weak.`,
-        `${movie.title}’s jump scares suck. ${mainActor} tries, but the ${style} plot’s thin.`,
-        `Bored by ${movie.title}. ${mainActor}’s okay, but the ${style} horror’s a miss.`,
-        `${movie.title}’s ${style} scares are lame. ${mainActor} can’t save the weak script.`
-      ],
-      thriller: [
-        `${movie.title}’s twists are predictable. ${mainActor}’s okay, but the ${style} plot’s weak.`,
-        `${movie.title} lost me halfway. ${mainActor} tries, but the ${style} suspense flops.`,
-        `${movie.title}’s not thrilling at all. ${mainActor}’s fine, but the ${style} story’s dull.`,
-        `${movie.title}’s ${style} vibe is off. ${mainActor} can’t save the boring twists.`
-      ],
-      animation: [
-        `${movie.title}’s visuals are bland. ${mainActor}’s voice is okay, but the ${style} story’s weak.`,
-        `${movie.title} feels like a cash grab. ${mainActor} tries, but the ${style} art’s meh.`,
-        `${movie.title}’s ${style} animation is dull. ${mainActor}’s voice can’t save it.`,
-        `Skipped parts of ${movie.title}. ${mainActor}’s fine, but the ${style} plot’s boring.`
-      ],
-      documentary: [
-        `${movie.title}’s facts are boring. ${mainActor}’s narration is flat, ${style} vibe’s off.`,
-        `${movie.title} feels like a lecture. ${mainActor} tries, but the ${style} story’s dull.`,
-        `${movie.title}’s ${style} truth is meh. ${mainActor}’s voice can’t keep me hooked.`,
-        `${movie.title} dragged on too long. ${mainActor}’s okay, but the ${style} doc’s weak.`
-      ],
-      "sci-fi": [
-        `${movie.title}’s world feels fake. ${mainActor}’s okay, but the ${style} plot’s a mess.`,
-        `${movie.title}’s sci-fi is boring. ${mainActor} tries, but the ${style} story’s weak.`,
-        `${movie.title}’s ${style} vibe flops. ${mainActor} can’t save the dull script.`,
-        `Skipped ${movie.title}. ${mainActor}’s fine, but the ${style} sci-fi’s a miss.`
-      ],
-      fantasy: [
-        `${movie.title}’s magic feels flat. ${mainActor}’s okay, but the ${style} lore’s weak.`,
-        `${movie.title}’s ${style} world is meh. ${mainActor} tries, but the plot’s boring.`,
-        `${movie.title} lacks fantasy spark. ${mainActor}’s fine, but the ${style} story’s dull.`,
-        `${movie.title}’s ${style} quest is weak. ${mainActor} can’t save the lame script.`
-      ],
-      adventure: [
-        `${movie.title}’s journey is boring. ${mainActor} tries, but the ${style} plot’s flat.`,
-        `${movie.title} feels like a slog. ${mainActor}’s okay, but the ${style} adventure’s weak.`,
-        `${movie.title}’s ${style} quest is meh. ${mainActor} can’t save the dull story.`,
-        `Skipped parts of ${movie.title}. ${mainActor}’s fine, but the ${style} vibe’s off.`
-      ],
-      musical: [
-        `${movie.title}’s songs are forgettable. ${mainActor}’s voice is okay, but the ${style} plot’s weak.`,
-        `${movie.title}’s ${style} tunes are flat. ${mainActor} tries, but the story’s boring.`,
-        `${movie.title} feels like a miss. ${mainActor}’s singing is fine, but the ${style} vibe’s off.`,
-        `${movie.title}’s ${style} music is meh. ${mainActor} can’t save the dull script.`
-      ],
-      western: [
-        `${movie.title}’s ${style} grit feels fake. ${mainActor}’s okay, but the plot’s weak.`,
-        `${movie.title}’s western vibe is off. ${mainActor} tries, but the ${style} story’s dull.`,
-        `${movie.title} dragged on too long. ${mainActor}’s fine, but the ${style} duels are meh.`,
-        `${movie.title}’s ${style} West is boring. ${mainActor} can’t save the lame script.`
-      ],
-      historical: [
-        `${movie.title}’s past feels flat. ${mainActor}’s okay, but the ${style} story’s dull.`,
-        `${movie.title}’s ${style} era is boring. ${mainActor} tries, but the plot’s weak.`,
-        `${movie.title} feels like a history lesson. ${mainActor}’s fine, but the ${style} vibe’s off.`,
-        `${movie.title}’s ${style} past is meh. ${mainActor} can’t save the dull script.`
-      ]
-    },
-    sequelRequests: {
-      default: [
-        `Yo, where’s ${movie.title} ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`}? ${mainActor} needs to come back ASAP!`,
-        `Binged ${movie.title} and I’m hooked! Drop ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`} now!`,
-        `${movie.title} was fire! ${mainActor} better return for ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`} soon!`,
-        `Need more ${movie.title}! ${mainActor} killed it, bring on ${isSeries ? `Season ${nextSeason}` : `Part ${nextPart}`}!`
-      ]
-    },
-    mixed: {
-      default: [
-        `${movie.title} was okay, ${mainActor}’s great but the ${style} story needed more punch.`,
-        `Enjoyed ${movie.title}, but it’s hit-or-miss. ${mainActor} shines, ${style} plot’s so-so.`,
-        `${movie.title} had moments, but ${mainActor} carries a shaky ${style} script.`,
-        `${movie.title}’s ${style} vibe is cool, but ${mainActor} can’t fix the weak parts.`
-      ]
-    }
-  };
-
-  // Generate comments based on score, budget, and talent
-  for (let i = 0; i < commentCount; i++) {
-    let comment;
-    const rand = Math.random();
-    if (score >= 80 && rand < (highBudget || highTalent ? 0.85 : 0.75)) {
-      // High score, high-budget/talent movies get more positive comments
-      comment = commentTemplates.positive[genre][Math.floor(Math.random() * commentTemplates.positive[genre].length)];
-    } else if (score < 60 && rand < (highBudget ? 0.25 : 0.45)) {
-      // Low score, low-budget movies get more negative comments
-      comment = commentTemplates.negative[genre][Math.floor(Math.random() * commentTemplates.negative[genre].length)];
-    } else if (score >= 75 && rand < 0.35 && (highBudget || highTalent)) {
-      // Sequel requests for high-scoring, high-quality movies
-      comment = commentTemplates.sequelRequests.default[Math.floor(Math.random() * commentTemplates.sequelRequests.default.length)];
-    } else {
-      // Mixed reviews for mid-range scores or to add variety
-      comment = commentTemplates.mixed.default[Math.floor(Math.random() * commentTemplates.mixed.default.length)];
-    }
-    // Add platform-specific flair
-    if (isYouTube && Math.random() < 0.3) {
-      comment = comment.toLowerCase() + (Math.random() < 0.5 ? " lol" : " fr");
-    } else if (isYouTube && Math.random() < 0.2) {
-      comment = comment.toUpperCase() + "!!!";
-    }
-    comments.push(comment);
-  }
-
-  // Shuffle comments to avoid predictable patterns
-  for (let i = comments.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [comments[i], comments[j]] = [comments[j], comments[i]];
-  }
-
-  return comments;
-}
-
-function showReviews() {
-  const existingPanel = document.getElementById("movieReviews");
-  if (existingPanel) existingPanel.remove();
-
-  let reviewPanel = document.createElement("div");
-  reviewPanel.id = "movieReviews";
-  let reviewList = document.createElement("div");
-  reviewList.id = "reviewList";
-
-  player.reviews.forEach(review => {
-    let div = document.createElement("div");
-    div.className = "movie-review";
-    div.innerHTML = `
-      <h3 style="margin: 0 0 8px; color: #FFD700; font-size: 16px;">🎬 ${review.title}</h3>
-      <p><strong>Platform:</strong> ${review.platform}</p>
-      <p><strong>Review Score:</strong> ${review.score}/100</p>
-      ${review.isSeries ? `<p><strong>Episode:</strong> ${review.currentEpisode}</p>` : ""}
-      <h4>Comments:</h4>
-      <ul>
-        ${review.comments.map(comment => `<li>${comment}</li>`).join("")}
-      </ul>
-    `;
-    reviewList.appendChild(div);
-  });
-
-  let closeButton = document.createElement("button");
-  closeButton.innerText = "Close";
-  closeButton.onclick = closeReviews;
-  closeButton.style = "margin-top: 10px; padding: 10px; width: 100%; border-radius: 8px; border: none; background: #ff9800; color: white; font-weight: bold; cursor: pointer;";
-
-  reviewPanel.appendChild(document.createElement("h2")).innerText = "🎬 Movie Reviews";
-  reviewPanel.appendChild(reviewList);
-  reviewPanel.appendChild(closeButton);
-  document.body.appendChild(reviewPanel);
-}
-
-function closeReviews() {
-  const reviewPanel = document.getElementById("movieReviews");
-  if (reviewPanel) reviewPanel.remove();
-}
-
 function checkAwards() {
   const awards = [
     { name: "AMVCA (Best Picture)", fameRequired: 5000, reviewScore: 85, viewsRequired: 500000, fameReward: 500, moneyReward: 10000 },
@@ -3061,8 +3499,474 @@ function checkAwards() {
   document.getElementById("money").innerText = formatNumber("money", player.money);
   document.getElementById("fame").innerText = formatNumber("fame", player.fame);
 }
+
+// Random Events System
+const eventCategories = {
+  positive: [
+    { name: "Blockbuster Buzz", description: "Your latest film goes viral on social media! +20% revenue boost for 4 weeks.", emoji: "🎉", effect: () => { /* Boost a random movie's revenue by 20% for 4 weeks */ let randomMovie = player.streamingMovies[Math.floor(Math.random() * player.streamingMovies.length)]; if (randomMovie) { randomMovie.weeklyRevenue *= 1.2; setTimeout(() => randomMovie.weeklyRevenue /= 1.2, 4000); } } },
+    { name: "Talent Breakthrough", description: "A hired actor wins a personal award, boosting studio fame. +500 fame.", emoji: "🏆", effect: () => player.fame += 500 },
+    { name: "Festival Acclaim", description: "Your film screens at a major festival, gaining critical praise. +10K fans.", emoji: "🎥", effect: () => player.fans += 10000 },
+    { name: "Merchandise Boom", description: "Tie-in merch sells out! +$5K one-time bonus.", emoji: "🛍️", effect: () => player.money += 5000 },
+    { name: "Investor Interest", description: "A venture capitalist offers funding. +$20K, but -5% future profits for 1 year.", emoji: "💼", effect: () => { player.money += 20000; /* Apply profit cut logic if needed */ } }
+  ],
+  negative: [
+    { name: "Production Delay", description: "Weather halts filming. Lose 2 weeks production time on current project.", emoji: "⛈️", effect: () => { /* Delay a random in-production movie */ let randomMovie = player.movies.find(m => !m.released); if (randomMovie) randomMovie.productionWeeksRequired += 2; } },
+    { name: "Talent Scandal", description: "A star actor is embroiled in controversy. -300 fame, -10K fans.", emoji: "📰", effect: () => { player.fame -= 300; player.fans = Math.max(0, player.fans - 10000); } },
+    { name: "Budget Overrun", description: "Unexpected costs inflate budget by 20%. -$2K.", emoji: "💸", effect: () => player.money -= 2000 },
+    { name: "Critic Flop", description: "Harsh reviews tank hype. Next release gets -15% revenue.", emoji: "👎", effect: () => { /* Apply to next release */ } },
+    { name: "Strike Action", description: "Crew strike demands higher pay. Lose 1 week earnings.", emoji: "🚧", effect: () => { /* Skip one week's earnings */ } }
+  ],
+  neutral: [
+    { name: "Tech Upgrade Opportunity", description: "New AI tool available for VFX. Spend $1K to reduce production time by 10%.", emoji: "🤖", effect: () => { if (confirm("Spend $1K on AI VFX tool?")) { player.money -= 1000; /* Reduce times */ } } },
+    { name: "Market Trend Shift", description: "Horror genre surges in popularity. +10% fans for horror films this quarter.", emoji: "📈", effect: () => { /* Boost horror movies */ } },
+    { name: "Collaborator Offer", description: "Partner studio proposes co-production. Accept for shared costs/risks?", emoji: "🤝", effect: () => { if (confirm("Accept co-production?")) { /* Shared logic */ } } },
+    { name: "Regulatory Change", description: "New tax incentives for green productions. Save 5% on eco-friendly films.", emoji: "🌿", effect: () => { /* Apply discount */ } },
+    { name: "Fan Backlash", description: "Social media uproar over casting. Mitigate with PR campaign (-$3K) or ignore (lose 5K fans)?", emoji: "📱", effect: () => { if (confirm("Spend $3K on PR?")) { player.money -= 3000; } else { player.fans -= 5000; } } },
+    ...businessTemplates.map(business => ({
+      name: `Investment Opportunity: ${business.name}`,
+      description: `You've been invited to invest in a ${business.name.toLowerCase()}. Cost: $${formatNumber("money", business.investment)}. Potential returns: ~${(business.baseReturnRate * 100).toFixed(0)}% annually. Risk: ${business.risk}. Accept?`,
+      emoji: "💼",
+      effect: () => {
+        if (confirm(`Invest in ${business.name}?`)) {
+          if (player.money >= business.investment) {
+            player.money -= business.investment;
+            player.businesses.push({
+              ...business,
+              currentValue: business.investment,
+              ownedSinceWeek: player.week,
+              ownedSinceYear: player.year,
+              performanceHistory: [] // Track weekly performance
+            });
+            alert(`You've invested in ${business.name}! It will start generating weekly profits/losses and affecting your fans.`);
+            document.getElementById("money").innerText = formatNumber("money", player.money);
+          } else {
+            alert("Not enough money to invest!");
+          }
+        } else {
+          alert("Investment opportunity declined.");
+        }
+      }
+    }))
+  ]
+};
+
+// Replace the existing triggerRandomEvent function with this
+function triggerRandomEvent() {
+  if (player.eventsThisYear >= 12) return;
+  const rand = Math.random();
+  let category = 'neutral';
+  if (rand < 0.3) category = 'positive';
+  else if (rand < 0.6) category = 'negative';
+  const events = eventCategories[category];
+  const event = events[Math.floor(Math.random() * events.length)];
+  if (player.currentYearEvents.includes(event.name)) return;
+  player.currentYearEvents.push(event.name);
+  player.eventsThisYear++;
+
+  // Special check for business invitations
+  if (event.name.startsWith("Investment Opportunity") && player.businessInvitationsThisYear >= 3) { // Cap at 3 per year
+    return; // Skip if cap reached
+  }
+  if (event.name.startsWith("Investment Opportunity")) {
+    player.businessInvitationsThisYear = (player.businessInvitationsThisYear || 0) + 1;
+  }
+
+  showEventPopup(event.emoji, event.name, event.description);
+  event.effect();
+}
+
+function showEventPopup(emoji, title, description) {
+  document.getElementById('eventEmoji').innerHTML = emoji;
+  document.getElementById('eventTitle').innerText = title;
+  document.getElementById('eventDescription').innerText = description;
+  document.getElementById('eventOverlay').style.display = 'flex';
+  setTimeout(closeEventPopup, 5000); // Auto-dismiss after 1m
+}
+
+function closeEventPopup() {
+  document.getElementById('eventOverlay').style.display = 'none';
+}
+
+function postTrailerToYouTube(movieIndex) {
+  const movie = player.movies[movieIndex];
+  if (!checkReleaseConditions(movie)) {
+    alert("Movie is not yet ready for a trailer!");
+    return;
+  }
+  if (player.youtubeVideos.some(v => v.title === movie.title && v.isTrailer)) {
+    alert(`${movie.title} trailer is already posted on YouTube!`);
+    return;
+  }
+
+  const isSeries = movie.type === "season" || movie.type === "mini-series";
+  const durationMultiplier = movie.duration / (movie.type === "short" ? 30 : movie.type === "feature" ? 90 : 45);
+  const adjustedMultiplier = durationMultiplier > 2 ? 2 + (durationMultiplier - 2) * 0.5 : durationMultiplier;
+  const budgetMultiplier = movie.budget === 1000 ? 1 : movie.budget === 2500 ? 1.5 : movie.budget === 5000 ? 2 : movie.budget === 7500 ? 2.5 : 3;
+  let talentMultiplier = 1;
+  const highCostTalents = movie.talents.filter(t => t.price >= 20000);
+  if (highCostTalents.length > 0) {
+    const highestPrice = Math.max(...highCostTalents.map(t => t.price));
+    talentMultiplier = highestPrice >= 100001 ? 4 : highestPrice >= 50001 ? 3 : 2;
+  }
+  const totalMultiplier = budgetMultiplier * talentMultiplier * adjustedMultiplier;
+  const styleMultiplier = movie.style === "traditional" ? 1.2 : movie.style === "future" ? 1.5 : 1.0;
+
+  const initialViews = Math.floor(movie.budget * 100 * adjustedMultiplier + player.fame * 10 + Math.random() * 500);
+  const initialLikes = Math.floor(initialViews * 0.05);
+  const initialComments = Math.floor(initialViews * 0.02);
+  const initialShares = Math.floor(initialViews * 0.005);
+  const newSubscribers = Math.floor(initialViews * 0.05 + player.fame * 0.03);
+  const earnings = Math.floor(initialViews / 1000 * 3); // Trailers earn less than full videos
+  const viralChance = Math.min(0.5, 0.05 + (movie.budget / 100) * 0.03 + player.fame * 0.02);
+  const isViral = Math.random() < viralChance;
+
+  player.subscribers += newSubscribers;
+  player.totalViews += initialViews;
+  player.youtubeEarnings += earnings;
+  player.money += earnings;
+  player.fame += Math.floor(initialViews / 1000);
+  player.fans += Math.floor(initialViews * 0.1);
+
+  player.youtubeVideos.push({
+    title: movie.title,
+    genre: movie.genres.join(", "),
+    views: initialViews,
+    likes: initialLikes,
+    comments: initialComments,
+    shares: initialShares,
+    growthRate: isViral ? 0.1 : 0.03,
+    weeksSinceRelease: 0,
+    isViral: isViral,
+    thumbnail: getGenreThumbnail(movie.genres[0]),
+    isTrailer: true,
+    isSeries: isSeries,
+    weeklyFans: Math.floor(50 * totalMultiplier * styleMultiplier), // Base fans for trailers
+    weeklyRevenue: Math.floor(10 * totalMultiplier * (movie.style === "future" ? 1.5 : 1.0)) // Base revenue for trailers
+  });
+
+  checkSubscriberMilestones();
+  renderYouTubeVideos();
+  document.getElementById("money").innerText = formatNumber("money", player.money);
+  document.getElementById("fame").innerText = formatNumber("fame", player.fame);
+  document.getElementById("fans").innerText = formatNumber("fans", player.fans);
+  alert(`🎬 ${movie.title} trailer posted to YouTube! Gained ${formatNumber("fans", newSubscribers)} subscribers, ${formatNumber("fame", Math.floor(initialViews / 1000))} fame, and earned ${formatNumber("money", earnings)}.${isViral ? " It's gone viral!" : ""}`);
+  renderMoviesInPanel(document.getElementById("movieList") || document.createElement("div"));
+}
+
+function scheduleYouTubeEpisode(videoIndex, week) {
+  const video = player.youtubeVideos[videoIndex];
+  if (!video.isSeries || video.currentEpisode >= video.totalEpisodes) {
+    alert("No episodes left to schedule!");
+    return;
+  }
+  if (!weeks.includes(week)) {
+    alert("Invalid week selected!");
+    return;
+  }
+
+  player.scheduledReleases.push({
+    videoIndex: videoIndex,
+    episode: video.currentEpisode + 1,
+    week: week
+  });
+  alert(`Episode ${video.currentEpisode + 1} of ${video.title} scheduled for ${week}!`);
+}
+
+function openFestivalSubmission() {
+  const existingPanel = document.getElementById("festivalPanel");
+  if (existingPanel) existingPanel.remove();
+
+  let festivalPanel = document.createElement("div");
+  festivalPanel.id = "festivalPanel";
+  festivalPanel.style = "position: fixed; top: 10%; left: 10%; width: 80%; max-height: 80%; background: #222; color: #fff; padding: 20px; border-radius: 10px; overflow-y: auto; z-index: 1000;";
+
+  let header = document.createElement("h2");
+  header.innerText = "🎬 Film Festival Submissions";
+  header.style = "margin-bottom: 10px; font-size: 18px; text-shadow: 1px 1px 2px #000;";
+
+  let festivalList = document.createElement("div");
+  festivalList.id = "festivalList";
+
+  let closeButton = document.createElement("button");
+  closeButton.innerText = "Close";
+  closeButton.onclick = function () {
+    festivalPanel.remove();
+  };
+  closeButton.style = "margin-top: 8px; padding: 8px; width: 100%; border-radius: 8px; border: none; background: #ff9800; color: white; font-weight: bold; cursor: pointer;";
+  closeButton.onmouseover = function () {
+    this.style.background = "#e67e22";
+  };
+  closeButton.onmouseout = function () {
+    this.style.background = "#ff9800";
+  };
+
+  festivalPanel.appendChild(header);
+  festivalPanel.appendChild(festivalList);
+  festivalPanel.appendChild(closeButton);
+  document.body.appendChild(festivalPanel);
+
+  renderFestivals();
+}
+
+function renderFestivals() {
+  const festivals = [
+    { name: "Sundance Film Festival", fameRequired: 2000, reviewScoreRequired: 80, budgetRequired: 1000, fameReward: 500, moneyReward: 10000, fanReward: 20000, maxSubmissions: 3 },
+    { name: "Cannes Film Festival", fameRequired: 10000, reviewScoreRequired: 90, budgetRequired: 5000, fameReward: 1500, moneyReward: 30000, fanReward: 50000, maxSubmissions: 2 },
+    { name: "Toronto International Film Festival (TIFF)", fameRequired: 5000, reviewScoreRequired: 85, budgetRequired: 2500, fameReward: 800, moneyReward: 15000, fanReward: 30000, maxSubmissions: 3 },
+    { name: "Berlin International Film Festival", fameRequired: 7000, reviewScoreRequired: 88, budgetRequired: 3000, fameReward: 1000, moneyReward: 20000, fanReward: 35000, maxSubmissions: 2 },
+    { name: "Venice Film Festival", fameRequired: 8000, reviewScoreRequired: 90, budgetRequired: 4000, fameReward: 1200, moneyReward: 25000, fanReward: 40000, maxSubmissions: 2 },
+    { name: "AMVCA", fameRequired: 3000, reviewScoreRequired: 80, budgetRequired: 1500, fameReward: 600, moneyReward: 12000, fanReward: 25000, maxSubmissions: 3 },
+  ];
+
+  const festivalList = document.getElementById("festivalList");
+  festivalList.innerHTML = "";
+
+  festivals.forEach(festival => {
+    if (player.fame >= festival.fameRequired) {
+      let festivalDiv = document.createElement("div");
+      festivalDiv.className = "festival";
+      festivalDiv.style = "margin-bottom: 15px; padding: 10px; background: #333; border-radius: 8px;";
+
+      let movieSelect = document.createElement("select");
+      movieSelect.id = `festivalMovie_${festival.name}`;
+      movieSelect.style = "margin-top: 5px; padding: 5px; width: 100%; border-radius: 8px; border: none;";
+      movieSelect.innerHTML = '<option value="">Select Movie</option>';
+
+      // Filter eligible movies
+      [...player.movies, ...player.streamingMovies, ...player.youtubeVideos].forEach((movie, index) => {
+        if (movie.released && !player.festivalSubmissions.some(sub => sub.movieTitle === movie.title && sub.festival === festival.name)) {
+          const review = player.reviews.find(r => r.title === movie.title);
+          if (review && review.score >= festival.reviewScoreRequired && movie.budget >= festival.budgetRequired) {
+            let option = document.createElement("option");
+            option.value = JSON.stringify({ movie, index, source: movie.platform ? "streaming" : movie.views ? "youtube" : "movies" });
+            option.innerText = `${movie.title} (${movie.type}, Score: ${review.score}/100)`;
+            movieSelect.appendChild(option);
+          }
+        }
+      });
+
+      let submitButton = document.createElement("button");
+      submitButton.innerText = "Submit to Festival";
+      submitButton.style = "margin-top: 5px; padding: 5px; width: 100%; border-radius: 8px; border: none; background: #4CAF50; color: white; font-weight: bold; cursor: pointer;";
+      submitButton.onmouseover = function () {
+        this.style.background = "#45a049";
+      };
+      submitButton.onmouseout = function () {
+        this.style.background = "#4CAF50";
+      };
+      submitButton.onclick = function () {
+        submitToFestival(festival, movieSelect.value);
+      };
+
+      festivalDiv.innerHTML = `
+        <h3 style="color: #FFD700; font-size: 16px;">${festival.name}</h3>
+        <p><strong>Fame Required:</strong> ${formatNumber("fame", festival.fameRequired)}</p>
+        <p><strong>Min Review Score:</strong> ${festival.reviewScoreRequired}/100</p>
+        <p><strong>Min Budget:</strong> $${formatNumber("money", festival.budgetRequired)}</p>
+        <p><strong>Rewards:</strong> +${formatNumber("fame", festival.fameReward)} fame, +$${formatNumber("money", festival.moneyReward)}, +${formatNumber("fans", festival.fanReward)} fans</p>
+      `;
+      festivalDiv.appendChild(movieSelect);
+      festivalDiv.appendChild(submitButton);
+      festivalList.appendChild(festivalDiv);
+    }
+  });
+
+  if (festivalList.innerHTML === "") {
+    festivalList.innerHTML = "<p>No festivals available or no eligible movies!</p>";
+  }
+}
+
+// Track festival submissions
+player.festivalSubmissions = [];
+player.festivalResults = [];
+
+function submitToFestival(festival, movieData) {
+  if (!movieData) {
+    alert("Please select a movie to submit!");
+    return;
+  }
+
+  const { movie, index, source } = JSON.parse(movieData);
+  const review = player.reviews.find(r => r.title === movie.title);
+  if (!review) {
+    alert("No review found for this movie!");
+    return;
+  }
+
+  // Check submission limit
+  const festivalSubmissions = player.festivalSubmissions.filter(sub => sub.festival === festival.name).length;
+  if (festivalSubmissions >= festival.maxSubmissions) {
+    alert(`You've reached the maximum submissions (${festival.maxSubmissions}) for ${festival.name}!`);
+    return;
+  }
+
+  // Submit the movie
+  player.festivalSubmissions.push({
+    festival: festival.name,
+    movieTitle: movie.title,
+    reviewScore: review.score,
+    weekSubmitted: player.week,
+    yearSubmitted: player.year
+  });
+
+  // Simulate competitors
+  const competitors = Array.from({ length: 4 }, () => ({
+    title: `Rival Film ${Math.floor(Math.random() * 1000)}`,
+    score: Math.floor(Math.random() * (festival.reviewScoreRequired + 15 - festival.reviewScoreRequired + 1)) + festival.reviewScoreRequired - 5
+  }));
+
+  // Determine winner
+  const allEntries = [...competitors, { title: movie.title, score: review.score }];
+  allEntries.sort((a, b) => b.score - a.score);
+  const winner = allEntries[0];
+
+  let message;
+  if (winner.title === movie.title) {
+    player.fame += festival.fameReward;
+    player.money += festival.moneyReward;
+    player.fans += festival.fanReward;
+    player.awards.push({ name: `${festival.name} Best Film`, title: movie.title });
+    message = `Your film "${movie.title}" took the crown,\nAt ${festival.name}, it won renown!\nWith a score of ${review.score}, it stole the show,\nGained ${formatNumber("fame", festival.fameReward)} fame, $${formatNumber("money", festival.moneyReward)}, and fans that grow!`;
+  } else {
+    message = `At ${festival.name}, "${movie.title}" did strive,\nBut with score ${review.score}, it couldn't thrive.\n"${winner.title}" won with a score of ${winner.score},\nBetter luck next time, aim for more!`;
+  }
+
+  player.festivalResults.push({
+    festival: festival.name,
+    movieTitle: movie.title,
+    result: winner.title === movie.title ? "Won" : "Lost",
+    winner: winner.title,
+    winnerScore: winner.score,
+    playerScore: review.score,
+    week: player.week,
+    year: player.year
+  });
+
+  showEventPopup("🎬", `${festival.name} Result`, message);
+  document.getElementById("money").innerText = formatNumber("money", player.money);
+  document.getElementById("fame").innerText = formatNumber("fame", player.fame);
+  document.getElementById("fans").innerText = formatNumber("fans", player.fans);
+  document.getElementById("awards").innerText = player.awards.length;
+  renderFestivals();
+}
+
+// Add anywhere in your script, preferably near other data structures like platforms or eventCategories
+const businessTemplates = [
+  {
+    name: "Movie Merchandise Brand",
+    description: "A brand selling official movie-themed apparel, toys, and collectibles. Low risk, steady fan engagement.",
+    investment: 500000, // $500k
+    risk: "low", // Low volatility
+    baseReturnRate: 0.08, // 8% average annual return
+    fanImpact: 5000, // Base weekly fan gain/loss potential
+    prestige: "medium" // Affects fame
+  },
+  {
+    name: "Talent Management Agency",
+    description: "An agency representing actors, directors, and crew. Medium risk, potential for high talent synergies.",
+    investment: 1000000, // $1M
+    risk: "medium",
+    baseReturnRate: 0.15, // 15% average
+    fanImpact: 10000,
+    prestige: "high"
+  },
+  {
+    name: "Film Equipment Rental Service",
+    description: "Renting out cameras, lights, and production gear to other studios. Low-medium risk, consistent demand.",
+    investment: 750000, // $750k
+    risk: "low-medium",
+    baseReturnRate: 0.12, // 12% average
+    fanImpact: 7000,
+    prestige: "medium"
+  },
+  {
+    name: "Independent Cinema Chain",
+    description: "A small chain of arthouse theaters showing indie films. High risk, but boosts cultural prestige.",
+    investment: 2000000, // $2M
+    risk: "high",
+    baseReturnRate: 0.25, // 25% average, but volatile
+    fanImpact: 15000,
+    prestige: "high"
+  },
+  {
+    name: "Virtual Reality Film Studio",
+    description: "Developing VR experiences based on your movies. High risk, cutting-edge tech with big payoff potential.",
+    investment: 1500000, // $1.5M
+    risk: "high",
+    baseReturnRate: 0.30, // 30% average
+    fanImpact: 12000,
+    prestige: "very high"
+  },
+  {
+    name: "Movie-Themed Restaurant Chain",
+    description: "Restaurants inspired by famous films, with themed menus and decor. Medium risk, fun fan interaction.",
+    investment: 800000, // $800k
+    risk: "medium",
+    baseReturnRate: 0.18, // 18% average
+    fanImpact: 9000,
+    prestige: "medium"
+  }
+];
+
+// Add anywhere in your script, preferably near other UI functions like renderFestivals
+function openBusinessPanel() {
+  const existingPanel = document.getElementById("businessPanel");
+  if (existingPanel) existingPanel.remove();
+
+  let businessPanel = document.createElement("div");
+  businessPanel.id = "businessPanel";
+  businessPanel.style = "position: fixed; top: 10%; left: 10%; width: 80%; max-height: 80%; background: #222; color: #fff; padding: 20px; border-radius: 10px; overflow-y: auto; z-index: 1000;";
+
+  let header = document.createElement("h2");
+  header.innerText = "🏢 Owned Businesses";
+  header.style = "margin-bottom: 10px; font-size: 18px; text-shadow: 1px 1px 2px #000;";
+
+  let businessList = document.createElement("div");
+  businessList.id = "businessList";
+
+  let closeButton = document.createElement("button");
+  closeButton.innerText = "Close";
+  closeButton.onclick = function () {
+    businessPanel.remove();
+  };
+  closeButton.style = "margin-top: 8px; padding: 8px; width: 100%; border-radius: 8px; border: none; background: #ff9800; color: white; font-weight: bold; cursor: pointer;";
+  closeButton.onmouseover = function () {
+    this.style.background = "#e67e22";
+  };
+  closeButton.onmouseout = function () {
+    this.style.background = "#ff9800";
+  };
+
+  businessPanel.appendChild(header);
+  businessPanel.appendChild(businessList);
+  businessPanel.appendChild(closeButton);
+  document.body.appendChild(businessPanel);
+
+  renderBusinesses();
+}
+
+function renderBusinesses() {
+  const businessList = document.getElementById("businessList");
+  businessList.innerHTML = "";
+  if (player.businesses.length === 0) {
+    businessList.innerHTML = "<p>You don't own any businesses yet. Wait for invitations!</p>";
+    return;
+  }
+  player.businesses.forEach(business => {
+    let div = document.createElement("div");
+    div.className = "business";
+    div.style = "margin-bottom: 15px; padding: 10px; background: #333; border-radius: 8px;";
+    const lastPerformance = business.performanceHistory[business.performanceHistory.length - 1] || 0;
+    div.innerHTML = `
+      <h3 style="color: #FFD700;">${business.name}</h3>
+      <p>${business.description}</p>
+      <p><strong>Current Value:</strong> $${formatNumber("money", business.currentValue)}</p>
+      <p><strong>Last Week's Performance:</strong> ${lastPerformance > 0 ? "+" : ""}$${formatNumber("money", lastPerformance)}</p>
+      <p><strong>Risk:</strong> ${business.risk} | <strong>Prestige:</strong> ${business.prestige}</p>
+    `;
+    businessList.appendChild(div);
+  });
+}
   </script>
 </body>
 </html>
-
-
